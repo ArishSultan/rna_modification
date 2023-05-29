@@ -1,0 +1,4 @@
+# DO NOT `delete` OR `.gitignore` THIS FILE.
+
+# This file is essential for utils.path.get_path to work as it is used to
+# resolve the main project directory
