@@ -11,7 +11,7 @@ def _find_project_root(marker='.root'):
     raise Exception("Project root not found. Place a .root file at the project root.")
 
 
-def get_path(relative_path):
+def get_path(relative_path) -> Path:
     """
     Generates a platform-independent absolute path from a project-relative path.
 
