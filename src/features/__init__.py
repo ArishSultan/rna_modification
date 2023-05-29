@@ -1,1 +1,1 @@
-from .encodings import anf
+from .encodings import anf, binary
