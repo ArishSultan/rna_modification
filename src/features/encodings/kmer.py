@@ -130,9 +130,6 @@ class Encoder(BaseEstimator, TransformerMixin):
         Creates an instance of Kmer Encoder with default parameters
 
         Args:
-        sequence (str): The DNA/RNA sequence S = {s1, s2, ..., sN} where si is the nucleotide at the i-th position and N
-                        is the length of the sequence.
-
         k (int): Length of k-mer
         upto (bool): If True, generates all k-mers of lengths upto k
         normalize (bool): If True, returns frequency instead of count
