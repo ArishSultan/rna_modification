@@ -148,7 +148,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         :param x: A DataFrame of DNA/RNA sequences.
         :return: A DataFrame of Kmer-encoded sequences.
         """
-        return x.applymap(lambda x: encode(x, self.k, self.upto, self.normalize))
+        return x.applymap(lambda seq: encode(seq, self.k, self.upto, self.normalize))
 
     def transform(self, x: DataFrame) -> DataFrame:
         """
