@@ -38,9 +38,9 @@ class Encoder(BaseEstimator, TransformerMixin):
     """
     A transformer that applies the Knc encoding technique to DNA/RNA sequences.
 
-    This transformer takes a DataFrame of DNA/RNA sequences and applies the Knc
+    This transformer takes a DataFrame of DNA/RNA sequences and applies the KNC
     encoding technique to each sequence. The resulting DataFrame contains a list
-    of floats representing the Kmer of each sequence.
+    of floats representing the KNC of each sequence.
 
     Example usage:
     >>> from pandas import DataFrame
@@ -52,7 +52,7 @@ class Encoder(BaseEstimator, TransformerMixin):
 
     def __init__(self, k: int = 2):
         """
-        Creates an instance of Knc Encoder with default parameters
+        Creates an instance of KNC Encoder with default parameters
 
         Args:
         k (int): The length of the k-tuple (must be > 0).
@@ -67,7 +67,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         transforms all the sequences to their `knc` encoding.
 
         :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Knc-encoded sequences.
+        :return: A DataFrame of KNC-encoded sequences.
         """
         return x.applymap(lambda seq: encode(seq, self.k))
 
@@ -76,6 +76,6 @@ class Encoder(BaseEstimator, TransformerMixin):
         Just a wrapper around `fit_transform` that calls the base method.
 
         :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Knc-encoded sequences.
+        :return: A DataFrame of KNC-encoded sequences.
         """
         return self.fit_transform(x)
