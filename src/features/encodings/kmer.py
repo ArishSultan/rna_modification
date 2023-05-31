@@ -3,6 +3,8 @@ from itertools import product
 from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...utils import encode_df
+
 
 def kmer_count(sequence: str, k: int = 2, upto: bool = False, normalize: bool = False) -> dict:
     """
@@ -148,7 +150,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         :param x: A DataFrame of DNA/RNA sequences.
         :return: A DataFrame of Kmer-encoded sequences.
         """
-        return x.applymap(lambda seq: encode(seq, self.k, self.upto, self.normalize))
+        return encode_df(x, lambda seq: encode(seq, self.k, self.upto, self.normalize), 'kmer')
 
     def transform(self, x: DataFrame) -> DataFrame:
         """

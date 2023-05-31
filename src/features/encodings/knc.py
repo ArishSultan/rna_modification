@@ -2,6 +2,7 @@ from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import kmer
+from ...utils import encode_df
 
 
 def encode(sequence: str, k: int = 2) -> list[float]:
@@ -69,7 +70,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         :param x: A DataFrame of DNA/RNA sequences.
         :return: A DataFrame of KNC-encoded sequences.
         """
-        return x.applymap(lambda seq: encode(seq, self.k))
+        return encode_df(x, lambda seq: encode(seq, self.k), f'knc_{self.k}')
 
     def transform(self, x: DataFrame) -> DataFrame:
         """

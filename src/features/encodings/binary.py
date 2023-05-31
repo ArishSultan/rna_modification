@@ -1,6 +1,8 @@
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...utils import encode_df
+
 
 def encode(sequence: str) -> list[float]:
     """
@@ -74,7 +76,7 @@ class Encoder(BaseEstimator, TransformerMixin):
         :param x: A DataFrame of DNA/RNA sequences.
         :return: A DataFrame of Binary-encoded sequences.
         """
-        return x.applymap(encode)
+        return encode_df(x, encode, 'binary')
 
     def transform(self, x: DataFrame) -> DataFrame:
         """
