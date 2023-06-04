@@ -1,8 +1,11 @@
-from src.data.datasets import load_psi, Species
-from src.features import anf
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
-data = load_psi(Species.human)
-encoder = anf.Encoder()
+# Disable the use of matplotlib's font settings in the PGF output
+mpl.rcParams['pgf.rcfonts'] = False
 
-enc = encoder.fit_transform(data.samples)
-print(enc)
+# Generate your plot using matplotlib
+plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
+
+# Save the plot as a PGF file
+plt.savefig('plot.pgf', format='pgf')
