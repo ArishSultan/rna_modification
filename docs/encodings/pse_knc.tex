@@ -1,0 +1,78 @@
+\section{Pseudo K-tuple Nucleotide Composition}
+
+Pseudo K-tuple Nucleotide Composition (PseKNC) is an encoding method used to 
+transform DNA or RNA sequences into a form suitable for computational processing
+ and machine learning algorithms. It captures both the local nucleotide patterns
+  and the global sequence information, providing a holistic representation of the
+   sequences.
+
+In PseKNC, each sequence is represented as a composition of k-tuple nucleotides 
+(k-mers), along with additional features capturing the global sequence information. 
+The term `pseudo' reflects the inclusion of these global features that go beyond 
+the simple k-tuple composition.\\
+
+\noindent
+Mathematically, for a sequence $S$ of length $N$, represented as 
+$S = \{s_1, s_2, \ldots, s_N\}$, the PseKNC encoding, represented as 
+$P = \{p_1, p_2, \ldots, p_L\}$, where $L$ is the number of k-mers plus the 
+number of global features, is computed as follows:
+
+\begin{equation}
+  p(i) = \frac{n(i)}{N - k + 1}, \quad \text{for $i = 1$, \dots, $L - w$}
+\end{equation}
+\begin{equation}
+p(i) = \lambda \cdot \phi(i - L + w), \quad \text{for $i = L - w + 1$, \dots, $L$}
+\end{equation}
+
+\noindent
+where:
+\begin{itemize}
+  \item $p(i)$ is the i-th element of the PseKNC representation.
+  \item $n(i)$ is the number of occurrences of the i-th k-mer in the sequence.
+  \item $N$ is the length of the sequence.
+  \item $k$ is the k-mer length.
+  \item $\phi(i - L + w)$ is the i-th global feature.
+  \item $\lambda$ is a weight factor balancing the importance of k-mer composition
+  and global features.
+  \item $w$ is the number of global features.
+\end{itemize}
+
+\noindent
+\textbf{Advantages of PseKNC Encoding:}
+\begin{itemize}
+  \item It captures both local nucleotide patterns (through k-mer composition) 
+  and global sequence information (through the additional pseudo features).
+  \item It provides a holistic representation of DNA or RNA sequences.
+  \item It can effectively deal with sequences of varying lengths.
+\end{itemize}
+
+\noindent
+\textbf{Limitations of PseKNC Encoding:}
+\begin{itemize}
+  \item The choice of k (k-mer length) and the global features can significantly 
+  affect the performance and interpretability of the encoding.
+  \item It can be computationally intensive, particularly for large sequences and 
+  larger k.
+  \item The encoded vectors can become high-dimensional, depending on the choice 
+  of k and the number of global features, potentially requiring more computational resources and sophisticated modeling techniques.
+\end{itemize}
+
+\noindent
+Additional aspects to consider when dealing with PseKNC encoding:
+
+\begin{itemize}
+  \item The choice of global features and the weight factor $\lambda$ should be 
+  carefully considered based on the specific task and the characteristics of the 
+  sequences.
+  \item It can be beneficial to normalize or scale the PseKNC vectors, especially 
+  when using machine learning algorithms sensitive to the scale of the features.
+  \item Visualization techniques, such as dimensionality reduction or clustering, 
+  can be useful for exploring and interpreting the PseKNC encoding.
+\end{itemize}
+
+\noindent
+In conclusion, Pseudo K-tuple Nucleotide Composition Encoding offers a versatile
+and comprehensive method for transforming DNA or RNA sequences into a form
+suitable for computational modeling. By capturing both local and global sequence
+information, it provides a rich representation that can enhance the performance
+of various bioinformatics tasks.

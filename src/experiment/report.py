@@ -7,7 +7,7 @@ import sklearn.metrics as metrics
 from scikitplot.helpers import cumulative_gain_curve
 
 
-class Report(ABC):
+class Report:
     def __init__(self, y, y_pred, y_pred_proba, scores, tables, visualizations):
         self._y = y
         self._y_pred = y_pred
@@ -71,31 +71,31 @@ class Report(ABC):
             )
         )
 
-    @abstractmethod
+    # @abstractmethod
     def plot_roc(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def plot_lift(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def plot_cumulative_gain(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def plot_precision_recall(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def display_confusion_matrix(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def display_classification_report(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def display_scores(self):
         pass
 

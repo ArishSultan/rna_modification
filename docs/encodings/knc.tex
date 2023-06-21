@@ -1,0 +1,60 @@
+\section{K-tuple Nucleotide Composition}
+
+K-tuple Nucleotide Composition (KNC) encoding is a technique for representing DNA
+or RNA sequences in a numerical form suitable for computational processing,
+particularly for machine learning algorithms. The essence of KNC is to capture
+local patterns and dependencies among nucleotides in the sequences by considering
+contiguous k-tuples or k-mers (subsequences of length k).
+
+In KNC encoding, a sequence is represented by the frequencies of all possible
+k-mers within that sequence. For instance, when $k=2$ (also known as di-nucleotide
+composition), a DNA sequence is characterized by the frequencies of its constituent
+di-nucleotides (`AA', `AC', `AG', `AT', `CA', `CC', `CG', `CT', `GA', `GC', `GG',
+`GT', `TA', `TC', `TG', `TT').\\
+
+\noindent
+Mathematically, for a sequence S of length N, represented as
+$S = \{s_1, s_2, \ldots, s_N\}$, the KNC encoding, represented as
+$K = \{k_1, k_2, \ldots, k_M\}$, where M is the total number
+of distinct k-mers, is calculated as follows:
+
+\begin{equation}
+  k(i) = \frac{n(i)}{N - k + 1}
+\end{equation}
+
+\noindent
+where:
+\begin{itemize}
+  \item $k(i)$ is the frequency of the i-th k-mer in the KNC representation.
+  \item $n(i)$ is the number of occurrences of the i-th k-mer in the sequence.
+  \item $N$ is the length of the sequence.
+  \item $k$ is the k-mer length.
+\end{itemize}
+
+\noindent
+\textbf{Advantages of KNC Encoding:}
+\begin{itemize}
+  \item It captures local nucleotide dependencies and patterns through the use of k-mers.
+  \item It provides a fixed-length numerical representation of DNA or RNA sequences, facilitating the use of machine learning models.
+  \item It's computationally efficient for relatively small k.
+\end{itemize}
+
+\noindent
+\textbf{Limitations of KNC Encoding:}
+\begin{itemize}
+  \item The dimensionality of the encoded representation grows exponentially with the choice of k, potentially leading to sparse and high-dimensional vectors.
+  \item It doesn't directly capture long-range interactions or global sequence features.
+  \item The choice of k can significantly affect the encoding, and there is no universally optimal choice of k.
+\end{itemize}
+
+\noindent
+Additional considerations when dealing with KNC encoding:
+
+\begin{itemize}
+  \item The choice of k should be guided by the specific task and the nature of the sequences. Smaller values of k capture local dependencies, while larger values may capture more complex patterns but risk increasing dimensionality and overfitting.
+  \item KNC can be combined with other encoding schemes (like PseKNC) to capture both local and global sequence information.
+  \item Normalization or scaling of KNC vectors can be important when using machine learning models that are sensitive to the scale of the features.
+\end{itemize}
+
+\noindent
+In summary, K-tuple Nucleotide Composition Encoding provides a practical and effective way to transform DNA or RNA sequences into a numerical form that can be used in various bioinformatics tasks. By capturing local patterns and dependencies, KNC encoding can enhance the performance of predictive models and help reveal insights into the underlying biological processes.

@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+
+\begin{document}
+
+% Figure # 1
+\begin{figure}
+    \centering
+    \input{/Users/arish/workspace/research/rna_modification/notebooks/stacked_nn/roc.tex}
+\end{figure}
+
+% Figure # 2
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \definecolor{darkorange}{RGB}{255,140,0}
+        \definecolor{dimgray85}{RGB}{85,85,85}
+        \definecolor{lightgray}{RGB}{211,211,211}
+        \definecolor{lightgray204}{RGB}{204,204,204}
+    \definecolor{navy}{RGB}{0,0,128}
+        \begin{axis}[
+            grid=major,
+            xmin=0, xmax=1,
+            ymin=0, ymax=1,
+            title=ROC Curve,
+            legend pos=south east,
+            ylabel=\textcolor{dimgray85}{True Positive Rate},
+            xlabel=\textcolor{dimgray85}{False Positive Rate},
+            xtick={0, 0.2,0.4,0.6,0.8,1},
+            ytick={0, 0.2,0.4,0.6,0.8,1},
+            tick align=outside,
+            tick pos=left,
+        ]
+            \addplot[color=red, mark=none] coordinates {
+                (0,0)
+                (0.1,0.3)
+                (0.2,0.6)
+                (0.3,0.7)
+                (0.4,0.8)
+                (0.6,0.85)
+                (0.8,0.9)
+                (1,1)
+            };
+            \addlegendentry{Model A}
+            \addplot[dashed, gray] coordinates {(0,0) (1,1)};
+            \addlegendentry{Random Guess}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{GPT 4 Receiver Operating Characteristic (ROC) Curve}
+\end{figure}
+
+
+\end{document}

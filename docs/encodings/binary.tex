@@ -1,0 +1,66 @@
+\section{Binary}
+Binary encoding is a technique employed to transform DNA or RNA sequences into 
+numerical representations that are amenable to computational and machine learning 
+techniques. In this encoding scheme, each nucleotide (A, C, G, T or U) is mapped 
+to a distinct binary vector, enabling computational models to process these biological 
+sequences.
+
+Each nucleotide is represented as a four-dimensional binary vector where exactly 
+one position corresponds to 1 (indicating presence) and the other three positions 
+correspond to 0 (indicating absence). Here is the typical representation:
+
+\begin{lstlisting}[basicstyle=\ttfamily]
+    - Adenine  (A) -> [1.0, 0.0, 0.0, 0.0]
+    - Cytosine (C) -> [0.0, 1.0, 0.0, 0.0]
+    - Guanine  (G) -> [0.0, 0.0, 1.0, 0.0]
+    - Thymine  (T) -> [0.0, 0.0, 0.0, 1.0]
+    - Uracil   (U) -> [0.0, 0.0, 0.0, 1.0]
+\end{lstlisting}
+
+\noindent
+For a sequence of length $N$, represented as $S = \{s_1, s_2, \ldots, s_N\}$, the 
+binary encoding process can be mathematically described as a function, 
+$f: S \rightarrow E$, mapping the original sequence into a sequence of 
+4-dimensional vectors, $E = \{e_1, e_2, \ldots, e_N\}$.\\
+
+\noindent
+\textbf{Advantages of Binary Encoding:}
+\begin{itemize}
+  \item It provides a clear, unambiguous representation of DNA or RNA sequences.
+  \item It makes the sequence data suitable for various machine learning and data
+  analysis methods.
+  
+  \item The process of encoding and decoding is straightforward and efficient.
+\end{itemize}
+
+\noindent
+\textbf{Limitations of Binary Encoding:}
+\begin{itemize}
+  \item It doesn't capture the positional context or the correlation between 
+  adjacent nucleotides in a sequence.
+  \item The encoded representation may result in high-dimensional data, especially
+   for long sequences.
+  \item It provides a simple 1-to-1 mapping and does not capture the complexities
+   of biological functions or mutations.
+\end{itemize}
+
+\noindent
+Some additional details about Binary Encoding:
+
+\begin{itemize}
+  \item The choice of binary vector for each nucleotide is arbitrary, as long as
+   each nucleotide has a unique representation.
+  
+  \item It can be combined with other methods (like position-specific encoding or
+   k-mer counting) for a more comprehensive representation.
+  
+  \item For nucleotides that are not recognized, it is common to encode them as 
+  a zero vector $[0.0, 0.0, 0.0, 0.0]$.
+\end{itemize}
+
+\noindent
+In conclusion, Binary Encoding is a foundational technique in bioinformatics that 
+translates the intricate language of DNA or RNA sequences into a binary format 
+suitable for computational analysis. Although it may not capture the full complexity 
+of biological sequences, it forms a basis upon which more complex encoding schemes 
+can be built.
