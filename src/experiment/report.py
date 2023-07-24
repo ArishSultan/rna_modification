@@ -1,20 +1,16 @@
 import numpy as np
 from pandas import DataFrame, Series
-
-from abc import ABC, abstractmethod
+import scikitplot
 
 import sklearn.metrics as metrics
 from scikitplot.helpers import cumulative_gain_curve
 
 
 class Report:
-    def __init__(self, y, y_pred, y_pred_proba, scores, tables, visualizations):
-        self._y = y
-        self._y_pred = y_pred
-        self._scores = scores
-        self._tables = tables
-        self._y_pred_proba = y_pred_proba
-        self._visualizations = visualizations
+    def __init__(self, scores, tables, visualizations):
+        self.scores = scores
+        self.tables = tables
+        self.visualizations = visualizations
 
     class Scores:
         def __init__(self, accuracy: float = 0.0, cohen_kappa: float = 0.0, mcc: float = 0.0, specificity: float = 0.0):
@@ -50,9 +46,6 @@ class Report:
         confusion_matrix = metrics.confusion_matrix(y, y_pred)
 
         return Report(
-            y=y,
-            y_pred=y_pred,
-            y_pred_proba=y_pred_proba,
             scores=Report.Scores(
                 mcc=metrics.matthews_corrcoef(y, y_pred),
                 accuracy=metrics.accuracy_score(y, y_pred),
@@ -71,33 +64,50 @@ class Report:
             )
         )
 
-    # @abstractmethod
-    def plot_roc(self):
-        pass
+    def to_json(self):
+        return {
+            'scores': {
+                'mcc': self.scores.mcc,
+                'accuracy': self.scores.accuracy,
+                'cohen_kappa': self.scores.cohen_kappa,
+                'specificity': self.scores.specificity,
+            },
+            'tables': {
+                'confusion_matrix': self.tables.confusion_matrix,
+                'classification_report': self.tables.classification_report,
+            },
+            'visualizations': {
+                'roc': self.visualizations.roc,
+                'lift': self.visualizations.lift,
+                'cumulative_gain': self.visualizations.cumulative_gain,
+                'precision_recall': self.visualizations.precision_recall,
+            }
+        }
 
-    # @abstractmethod
-    def plot_lift(self):
-        pass
+    @staticmethod
+    def from_json(jsonobj):
+        scores = jsonobj['scores']
+        tables = jsonobj['tables']
+        visualizations = jsonobj['visualizations']
 
-    # @abstractmethod
-    def plot_cumulative_gain(self):
-        pass
-
-    # @abstractmethod
-    def plot_precision_recall(self):
-        pass
-
-    # @abstractmethod
-    def display_confusion_matrix(self):
-        pass
-
-    # @abstractmethod
-    def display_classification_report(self):
-        pass
-
-    # @abstractmethod
-    def display_scores(self):
-        pass
+        return Report(
+            scores=Report.Scores(
+                mcc=scores['mcc'],
+                accuracy=scores['accuracy'],
+                cohen_kappa=scores['cohen_kappa'],
+                specificity=scores['specificity'],
+            ),
+            tables=Report.Tables(
+                confusion_matrix=tables['confusion_matrix'],
+                classification_report=tables['classification_report']
+            ),
+            visualizations=Report.Visualizations(
+                roc=visualizations['roc'],
+                lift=visualizations['lift'],
+                cumulative_gain=visualizations['cumulative_gain'],
+                precision_recall=visualizations['precision_recall'],
+            )
+        )
 
 
 def _predict_proba(results):
@@ -109,6 +119,7 @@ def _predict_proba(results):
 
 
 def _calculate_specificity(matrix):
+
     tn, fp, fn, tp = matrix.ravel()
     return tn / (tn + fp)
 
@@ -127,11 +138,18 @@ def _calculate_cumulative_gain_curve(y, y_pred_proba):
     percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0])
     percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1])
 
-    return percentages, gains1, gains2
+    return {
+        'gains1': gains1,
+        'gains2': gains2,
+        'percentages': percentages,
+    }
 
 
 def _calculate_lift_curve(y, y_pred_proba):
     classes = np.unique(y)
+    print(classes[0])
+    print(classes[1])
+    print('----------')
     percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0], classes[0])
     percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1], classes[1])
 
@@ -139,4 +157,8 @@ def _calculate_lift_curve(y, y_pred_proba):
     gains1 = gains1[1:] / percentages
     gains2 = gains2[1:] / percentages
 
-    return percentages, gains1, gains2
+    return {
+        'gains1': gains1,
+        'gains2': gains2,
+        'percentages': percentages,
+    }
