@@ -1,3 +1,5 @@
+import os
+import subprocess
 from pathlib import Path
 from ..report import Report
 
@@ -188,7 +190,7 @@ def generate_cg_curve(data):
     return _generate_gain_curve(data, 'Gain', 'Cumulative gain curve')
 
 
-def generate_latex_report(report: Report, name: str, out: Path):
+def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=False):
     out.mkdir(exist_ok=True)
 
     with open(out / f'{name}.tex', 'w') as file:
@@ -235,15 +237,16 @@ def generate_latex_report(report: Report, name: str, out: Path):
        generate_lift_curve(report.visualizations.lift),
        generate_lift_curve(report.visualizations.cumulative_gain),
        ))
+    if generate_pdf:
+        subprocess.run(['tectonic', str(out / f'{name}.tex')])
 
 
-def generate_kfold_latex_report(reports: list[Report], name: str, out: Path):
+def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, generate_pdf=False):
     out.mkdir(exist_ok=True)
 
     generated = []
     for i in range(len(reports)):
         report = reports[i]
-        print(report)
 
         generated.append(r'''
 \begin{center}
@@ -298,3 +301,5 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: Path):
 
 \end{document}
 ''' % '\n'.join(generated))
+    if generate_pdf:
+        subprocess.run(['tectonic', str(out / f'{name}.tex')])

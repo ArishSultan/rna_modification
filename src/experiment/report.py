@@ -147,9 +147,6 @@ def _calculate_cumulative_gain_curve(y, y_pred_proba):
 
 def _calculate_lift_curve(y, y_pred_proba):
     classes = np.unique(y)
-    print(classes[0])
-    print(classes[1])
-    print('----------')
     percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0], classes[0])
     percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1], classes[1])
 

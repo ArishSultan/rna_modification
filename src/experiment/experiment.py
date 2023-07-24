@@ -21,7 +21,7 @@ class Experiment:
         y = self.train.targets
         x = self.encoding.fit_transform(self.train.samples)
 
-        # k_fold_reports = []
+        k_fold_reports = []
         for train_index, test_index in k_fold.split(x):
             train_x, test_x = x.iloc[train_index], x.iloc[test_index]
             train_y, test_y = y.iloc[train_index], y.iloc[test_index]
@@ -29,7 +29,7 @@ class Experiment:
             model = self.factory.create_model()
             model.fit(train_x, train_y)
 
-            # k_fold_reports.append(Report.create_report(model, (test_x, test_y)))
+            k_fold_reports.append(Report.create_report(model, (test_x, test_y)))
 
         test_y = self.test.targets
         test_x = self.encoding.fit_transform(self.test.samples)
@@ -38,6 +38,6 @@ class Experiment:
         model.fit(x, y)
 
         return {
-            # 'train': k_fold_reports,
+            'train': k_fold_reports,
             'test': Report.create_report(model, (test_x, test_y))
         }
