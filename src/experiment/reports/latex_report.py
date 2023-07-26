@@ -1,18 +1,18 @@
-import os
 import subprocess
 from pathlib import Path
 from ..report import Report
 
 
 def generate_classification_report(report):
-    template = r'''\begin{table}[h]
+    template = r'''\begin{table}[h!]
   \centering
-  \begin{tabular}{|r|c|c|c|c|}
-    \hline
+  \begin{tabular}{rcccc}
+    \toprule
     & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} & \textbf{Support} \\
-    \hline
+    \midrule
 
 @rows
+    \bottomrule
   \end{tabular}
 \end{table}'''
 
@@ -29,44 +29,39 @@ def generate_classification_report(report):
                 round(value['precision'], 2),
                 round(value['recall'], 2),
                 round(value['f1-score'], 2),
-                round(value['support'], 2)
+                int(value['support'])
             )
         )
-        rows.append(r'    \hline')
 
     return template.replace('@rows', '\n'.join(rows))
 
 
 def generate_confusion_matrix(matrix):
-    return r'''\begin{table}[h]
+    return r'''\begin{table}[h!]
   \centering
-  \begin{tabular}{|c|c|c|}
-    \hline
+  \begin{tabular}{ccc}
+    \toprule
      & \textbf{Predicted $+ive$} & \textbf{Predicted $-ive$} \\
-    \hline
+    \midrule
     \textbf{Actual $+ive$} & %s & %s \\
-    \hline
     \textbf{Actual $-ive$} & %s & %s \\
-    \hline
+    \bottomrule
   \end{tabular}
 \end{table}''' % (matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1])
 
 
 def generate_scores_table(scores):
-    return r'''\begin{table}[h]
+    return r'''\begin{table}[h!]
   \centering
-  \begin{tabular}{|c|c|}
-    \hline
+  \begin{tabular}{lc}
+    \toprule
     \textbf{Scores} & \textbf{Values} \\
-    \hline
-    Accuracy & %s \\
-    \hline
-    Specificity & %s \\
-    \hline
-    MCC & %s \\
-    \hline
-    Cohen Kappa & %s \\
-    \hline
+    \midrule
+    \texttt{accuracy} & %s \\
+    \texttt{specificity} & %s \\
+    \texttt{mathew's cc} & %s \\
+    \texttt{cohen Kappa} & %s \\
+    \bottomrule
   \end{tabular}
 \end{table}''' % (
         round(scores.accuracy, 2),
@@ -129,7 +124,7 @@ def generate_roc_curve(data):
     )
 
 
-def _generate_gain_curve(data, ylabel, title):
+def _generate_gain_curve(data, ylabel, title, is_lift):
     gains1 = data['gains1']
     gains2 = data['gains2']
     percentages = data['percentages']
@@ -156,23 +151,25 @@ def _generate_gain_curve(data, ylabel, title):
     };
 
     \addlegendentry{Baseline}
-    \addplot[black, line width=1pt, dashed, dash pattern=on 4pt off 2pt] table {
-      0 1
+    \addplot[black, dashed, dash pattern=on 4pt off 2pt] table {
+      0 %s
       1 1
-    };''' % ('\n'.join(plot1), '\n'.join(plot2))
+    };''' % ('\n'.join(plot1), '\n'.join(plot2), '1' if is_lift else '0')
     )
 
 
 def generate_lift_curve(data):
-    return _generate_gain_curve(data, 'Lift', 'Lift curve')
+    return _generate_gain_curve(data, 'Lift', 'Lift curve', True)
 
 
 def generate_pr_curve(data):
     precision = data['precision']
     recall = data['recall']
 
+    filler = []
     entries = []
     for i in range(len(precision)):
+        filler.append(f'      --(axis cs:{recall[i]},{precision[i]})')
         entries.append(f'      {recall[i]} {precision[i]}')
 
     return generate_tikz_plot(
@@ -180,14 +177,17 @@ def generate_pr_curve(data):
         'Precision',
         'Precision-Recall curve',
         r'''    \addlegendentry{Precision-Recall curve}
-   \addplot[thick, steelblue] table {
+
+    \addplot [semithick, blue, const plot mark left, opacity=0.2] table {
 %s
-   };''' % '\n'.join(entries)
+    };''' % (
+            # '\n'.join(filler),
+            '\n'.join(entries))
     )
 
 
 def generate_cg_curve(data):
-    return _generate_gain_curve(data, 'Gain', 'Cumulative gain curve')
+    return _generate_gain_curve(data, 'Gain', 'Cumulative gain curve', False)
 
 
 def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=False):
@@ -199,6 +199,7 @@ def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=Fal
 \usepackage{xcolor}
 \usepackage{pgfplots}
 \usepackage{multirow}
+\usepackage{booktabs}
 \usepackage[margin=.5in]{geometry}
 \usepackage{nopageno}
 \usetikzlibrary{patterns}
@@ -223,7 +224,6 @@ def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=Fal
   \centering
   \begin{tabular}{cc}
     %s %s \\
-    \hline
     %s %s
   \end{tabular}
 \end{table}
@@ -235,7 +235,7 @@ def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=Fal
        generate_roc_curve(report.visualizations.roc),
        generate_pr_curve(report.visualizations.precision_recall),
        generate_lift_curve(report.visualizations.lift),
-       generate_lift_curve(report.visualizations.cumulative_gain),
+       generate_cg_curve(report.visualizations.cumulative_gain),
        ))
     if generate_pdf:
         subprocess.run(['tectonic', str(out / f'{name}.tex')])
@@ -249,9 +249,8 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, gen
         report = reports[i]
 
         generated.append(r'''
-\begin{center}
 \huge{\textbf{%s}}
-\end{center}
+\normalsize
 
 %s
 
@@ -259,22 +258,20 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, gen
 
 %s
 
-\begin{table}[h!]
-  \centering
+\begin{center}
   \begin{tabular}{cc}
     %s %s \\
-    \hline
     %s %s
   \end{tabular}
-\end{table}
-        ''' % (f'{i + 1} Fold',
+\end{center}
+        ''' % (f'Fold-{i + 1}',
                generate_scores_table(report.scores),
                generate_confusion_matrix(report.tables.confusion_matrix),
                generate_classification_report(report.tables.classification_report),
                generate_roc_curve(report.visualizations.roc),
                generate_pr_curve(report.visualizations.precision_recall),
                generate_lift_curve(report.visualizations.lift),
-               generate_lift_curve(report.visualizations.cumulative_gain),
+               generate_cg_curve(report.visualizations.cumulative_gain),
                ))
 
     with open(out / f'{name}.tex', 'w') as file:
@@ -282,6 +279,7 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, gen
 \usepackage{tikz}
 \usepackage{xcolor}
 \usepackage{pgfplots}
+\usepackage{booktabs}
 \usepackage{multirow}
 \usepackage[margin=.5in]{geometry}
 \usepackage{nopageno}
@@ -300,6 +298,6 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, gen
 %s
 
 \end{document}
-''' % '\n'.join(generated))
+''' % '\n\\clearpage\n'.join(generated))
     if generate_pdf:
         subprocess.run(['tectonic', str(out / f'{name}.tex')])

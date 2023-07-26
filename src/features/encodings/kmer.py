@@ -21,10 +21,20 @@ def kmer_count(sequence: str, k: int = 2, upto: bool = False, normalize: bool = 
     """
 
     seq_mers = seq_to_kmer(sequence, k, upto)
-    counter = Counter(seq_mers)
-
     all_mers = generate_all_kmers(k, upto)
-    result = {mer: (counter.get(mer, 0.0) / len(seq_mers) if normalize else counter.get(mer, 0.0)) for mer in all_mers}
+
+    counter = Counter()
+    counter.update(seq_mers)
+
+    result = dict()
+    for mer in all_mers:
+        if mer in counter:
+            if normalize:
+                result[mer] = float(counter[mer] / len(seq_mers))
+            else:
+                result[mer] = float(counter[mer])
+        else:
+            result[mer] = 0.0
 
     return result
 
@@ -48,9 +58,17 @@ def seq_to_kmer(sequence: str, k: int = 2, upto: bool = False) -> tuple[str]:
     if k < 1:
         raise Exception("[k] must be greater then 0")
 
-    repeats = range(1, k + 1) if upto else [k]
+    if upto:
+        repeats = list(range(1, k + 1))
+    else:
+        repeats = [k]
 
-    results = [sequence[j: j + i] for i in repeats for j in range(len(sequence) - i + 1)]
+    results = list[str]()
+    for i in repeats:
+        results += [
+            sequence[j: j + i]
+            for j in range(len(sequence) - i + 1)
+        ]
 
     return tuple(results)
 
@@ -72,9 +90,14 @@ def generate_all_kmers(k: int = 2, upto: bool = False) -> tuple[str]:
     assert k > 0
     nucleotides = 'ACGU'
 
-    repeats = range(1, k + 1) if upto else [k]
+    if upto:
+        repeats = list(range(1, k + 1))
+    else:
+        repeats = [k]
 
-    results = [''.join(x) for i in repeats for x in product(nucleotides, repeat=i)]
+    results = list[str]()
+    for i in repeats:
+        results += [''.join(x) for x in product(nucleotides, repeat=i)]
 
     return tuple(results)
 
@@ -108,7 +131,23 @@ def encode(sequence: str, k: int = 2, upto: bool = False, normalize: bool = Fals
                   frequency of the i-th k-mer in the original sequence.
     """
 
-    return list(kmer_count(sequence, k, upto, normalize).values())
+    seq_mers = seq_to_kmer(sequence, k, upto)
+    all_mers = generate_all_kmers(k, upto)
+
+    counter = Counter()
+    counter.update(seq_mers)
+
+    result = list[float]()
+    for mer in all_mers:
+        if mer in counter:
+            if normalize:
+                result.append(counter[mer] / len(seq_mers))
+            else:
+                result.append(counter[mer])
+        else:
+            result.append(0)
+
+    return result
 
 
 class Encoder(BaseEstimator, TransformerMixin):

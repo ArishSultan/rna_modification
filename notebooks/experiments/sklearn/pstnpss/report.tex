@@ -1,0 +1,159 @@
+
+\documentclass{article}
+
+\usepackage{pgf}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots,dateplot}
+\usetikzlibrary{patterns,shapes.arrows}
+\pgfplotsset{compat=newest}
+
+
+\begin{document}
+\newgeometry{margin=1in}
+
+
+\begin{table}[h!tbp]
+  \centering
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{lccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Metrics}} & \multicolumn{3}{c}{\textbf{Scores}} \\
+    \cmidrule(lr){2-4}
+    & \textbf{Human}& \textbf{Yeast} \\
+    \midrule
+    \textbf{Accuracy} & 0.80& 0.84 \\
+    \textbf{Mathew's CC} & 0.60& 0.68 \\
+    \textbf{Cohen's Kappa} & 0.60& 0.68 \\
+    \textbf{Specificity} & 0.78& 0.78 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Classifier Metrics of all species}
+\end{table}
+
+\vspace{100pt}
+
+
+\begin{table}[h!tbp]
+
+\centering
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{rcc}
+  \toprule
+  & \textbf{Predicted} $-ive$ & \textbf{Predicted} $+ive$ \\
+  \midrule
+  \textbf{Actual} $-ive$ & 78 & 22 \\
+  \textbf{Actual} $+ive$ & 18 & 82 \\
+  \bottomrule
+\end{tabular}
+
+\caption{Confusion Matrix for Human}
+\end{table}
+
+
+\begin{table}[h!tbp]
+
+\centering
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{rcc}
+  \toprule
+  & \textbf{Predicted} $-ive$ & \textbf{Predicted} $+ive$ \\
+  \midrule
+  \textbf{Actual} $-ive$ & 78 & 22 \\
+  \textbf{Actual} $+ive$ & 10 & 90 \\
+  \bottomrule
+\end{tabular}
+
+\caption{Confusion Matrix for Yeast}
+\end{table}
+
+
+
+\begin{table}[htbp]
+
+\centering
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{rcccc}
+  \toprule
+  & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+  \midrule
+  \textbf{0} & 0.81 & 0.81 & 0.81 & 0.81 \\
+  \textbf{1} & 0.79 & 0.79 & 0.79 & 0.79 \\
+  \textbf{Macro Avg} & 0.80 & 0.80 & 0.80 & 0.80 \\
+  \textbf{Weighted Avg} & 0.80 & 0.80 & 0.80 & 0.80 \\
+  \bottomrule
+\end{tabular}
+
+\caption{Classification Report for Human}
+\end{table}
+
+
+\begin{table}[htbp]
+
+\centering
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{rcccc}
+  \toprule
+  & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+  \midrule
+  \textbf{0} & 0.89 & 0.89 & 0.89 & 0.89 \\
+  \textbf{1} & 0.80 & 0.80 & 0.80 & 0.80 \\
+  \textbf{Macro Avg} & 0.84 & 0.84 & 0.84 & 0.84 \\
+  \textbf{Weighted Avg} & 0.84 & 0.84 & 0.84 & 0.84 \\
+  \bottomrule
+\end{tabular}
+
+\caption{Classification Report for Yeast}
+\end{table}
+
+
+\clearpage
+\newgeometry{landscape, margin=0.25in}
+\begin{landscape}
+
+
+\begin{table}
+  \begin{tabular}{ccc}
+    \input{roc_human.tex}&\input{roc_yeast.tex} \\
+  \end{tabular}
+  \caption{Receiver operating characteristic (ROC) curves}
+\end{table}
+
+
+\begin{table}
+  \begin{tabular}{ccc}
+    \input{pr_human.tex}&\input{pr_yeast.tex} \\
+  \end{tabular}
+  \caption{Precision Recall curves}
+\end{table}
+
+
+\begin{table}
+  \begin{tabular}{ccc}
+    \input{cg_human.tex}&\input{cg_yeast.tex} \\
+  \end{tabular}
+  \caption{Cumulative Gain Charts}
+\end{table}
+
+
+\begin{table}
+  \begin{tabular}{ccc}
+    \input{lft_human.tex}&\input{lft_yeast.tex} \\
+  \end{tabular}
+  \caption{Lift Curves}
+\end{table}
+
+\end{landscape}
+\end{document}
