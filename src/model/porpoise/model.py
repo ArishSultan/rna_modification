@@ -7,10 +7,10 @@ from sklearn.linear_model import LogisticRegression
 from mlxtend.feature_selection import ColumnSelector
 from sklearn.ensemble import GradientBoostingClassifier
 
-from sklearn.base import BaseEstimator, ClassifierMixin
+from ..base import ModelFactory, BaseModel
 
 
-class Porpoise(BaseEstimator, ClassifierMixin):
+class Model(BaseModel):
     def __init__(self):
         s0 = ColumnSelector(range(19))
         c0 = XGBClassifier(
@@ -49,3 +49,8 @@ class Porpoise(BaseEstimator, ClassifierMixin):
 
     def predict_proba(self, x):
         return self._model.predict_proba(x)
+
+
+class Factory(ModelFactory):
+    def create_model(self) -> BaseModel:
+        return Model()

@@ -1,9 +1,9 @@
-from . import get_path
-from ..experiment.reports.latex_report import *
+from src.utils import get_path
+from src.experiment.reports.latex_report import *
 
 
 def write_reports(report: dict, name: str, modification: str, specie: str):
-    main_dir = get_path('reports')
+    main_dir = get_path('')
 
     main_dir.mkdir(exist_ok=True)
     (main_dir / name).mkdir(exist_ok=True)
