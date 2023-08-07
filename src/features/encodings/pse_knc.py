@@ -3,38 +3,12 @@ from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import kmer
-from ...utils import get_path, encode_df
+from ...utils import get_path, encode_df, get_info_file
 
 _K_2_INDEX = {'AA': 0, 'AC': 1, 'AG': 2, 'AU': 3,
               'CA': 4, 'CC': 5, 'CG': 6, 'CU': 7,
               'GA': 8, 'GC': 9, 'GG': 10, 'GU': 11,
               'UA': 12, 'UC': 13, 'UG': 14, 'UU': 15}
-
-_METHODS_DICT = {'DAC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'DCC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'DACC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'TAC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'TCC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'TACC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'PseDNC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'PseKNC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'PCPseDNC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'PCPseTNC': [],
-                 'SCPseDNC': ['Rise (RNA)', 'Roll (RNA)', 'Shift (RNA)', 'Slide (RNA)', 'Tilt (RNA)', 'Twist (RNA)'],
-                 'SCPseTNC': []}
-
-_DATA_FILE_DICT = {'DAC': 'dirnaPhyche.data',
-                   'DCC': 'dirnaPhyche.data',
-                   'DACC': 'dirnaPhyche.data',
-                   'TAC': 'dirnaPhyche.data',
-                   'TCC': 'dirnaPhyche.data',
-                   'TACC': 'dirnaPhyche.data',
-                   'PseDNC': 'dirnaPhyche.data',
-                   'PseKNC': 'dirnaPhyche.data',
-                   'PCPseDNC': 'dirnaPhyche.data',
-                   'PCPseTNC': '',
-                   'SCPseDNC': 'dirnaPhyche.data',
-                   'SCPseTNC': ''}
 
 
 def calculate_correlation(mer1, mer2, indexes, info):
@@ -66,11 +40,8 @@ def calculate_theta_list(info: tuple, indexes: dict, lambda0: float, sequence: s
     return theta_list
 
 
-def get_info(method: str):
-    filename = _DATA_FILE_DICT[method]
-    with open(get_path(f'data/raw/features/{filename}'), 'rb') as file:
-        data = pickle.load(file)
-    return _METHODS_DICT[method], data
+def get_info():
+    return get_info_file('PseKNC')
 
 
 def encode(sequence: str, info: tuple, k=2, lambda0: float = 1, weight: float = 0) -> list[float]:

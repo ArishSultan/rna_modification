@@ -86,4 +86,3 @@ class Encoder(BaseEstimator, TransformerMixin):
         :return: A DataFrame of Binary-encoded sequences.
         """
         return self.fit_transform(x)
-
