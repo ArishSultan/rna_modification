@@ -3,7 +3,8 @@ from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import kmer
-from ...utils import get_path, encode_df, get_info_file
+from ...utils import get_path
+from ...utils.features import encode_df, get_info_file
 
 _K_2_INDEX = {'AA': 0, 'AC': 1, 'AG': 2, 'AU': 3,
               'CA': 4, 'CC': 5, 'CG': 6, 'CU': 7,

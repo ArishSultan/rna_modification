@@ -2,7 +2,7 @@ from rdkit import Chem
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from ...utils import encode_df
+from ...utils.features import encode_df
 
 
 def encode(sequence: str) -> list[str]:

@@ -2,7 +2,7 @@ from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import kmer
-from ...utils import encode_df
+from ...utils.features import encode_df
 
 
 def encode(sequence: str, k: int = 2) -> list[float]:

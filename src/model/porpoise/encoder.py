@@ -4,7 +4,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import pstnpss
 from ...data import Species
-from ...utils import encode_df
+from ...utils.features import encode_df
 from ...features.encodings import pse_knc, binary
 
 
