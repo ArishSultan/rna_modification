@@ -1,4 +1,5 @@
-from pandas import read_csv
+from os import PathLike
+from pandas import concat, read_csv
 
 from ..utils import get_path
 from .species import Species
@@ -32,3 +33,7 @@ def load_psi(species: Species, independent: bool = False) -> SeqBunch:
         samples=dataset.drop(1, axis=1).rename({0: 'sequence'}, axis=1),
         description=f'Pseudo-uridine modification dataset for {species.value}',
     )
+
+
+def save_dataset(path: str | PathLike[str], bunch: SeqBunch):
+    concat([bunch.samples, bunch.targets], axis=1).to_csv(path, index=False)
