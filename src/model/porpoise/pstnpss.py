@@ -1,7 +1,7 @@
-from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from ...data import Species
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 from ...features.encodings.pstnpss import TRI_NUCLEOTIDES_DICT as ORDER
 
@@ -611,14 +611,12 @@ class Encoder(BaseEstimator, TransformerMixin):
     def __init__(self, species: Species):
         self._species = species
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        return encode_df(x, lambda seq: encode(seq, self._species), 'pstnpss')
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq, self._species), 'pstnpss'),
+        )
 
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of ANF-encoded sequences.
-        """
+    def transform(self, x: SeqBunch) -> SeqBunch:
         return self.fit_transform(x)
