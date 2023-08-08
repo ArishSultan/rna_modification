@@ -2,35 +2,83 @@ import numpy as np
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from ...utils.features import encode_df
 from ...data.seq_bunch import SeqBunch
 
-
-def encode(sequence: str, pos_matrix: list, neg_matrix: list) -> list[float]:
-    pass
-
-
-class Encoder(BaseEstimator, TransformerMixin):
-    def fit_transform(self, bunch: SeqBunch, **kwargs) -> DataFrame:
-        print(bunch.samples)    
-
-        pass
-        # return encode_df(x, lambda seq: encode(seq, self._species), 'pstnpss')
-
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of ANF-encoded sequences.
-        """
-        return self.fit_transform(x)
+TRI_NUCLEOTIDES_DICT = {
+    'AAA': 0, 'AAC': 1, 'AAG': 2, 'AAU': 3, 'ACA': 4, 'ACC': 5, 'ACG': 6, 'ACU': 7,
+    'AGA': 8, 'AGC': 9, 'AGG': 10, 'AGU': 11, 'AUA': 12, 'AUC': 13, 'AUG': 14, 'AUU': 15,
+    'CAA': 16, 'CAC': 17, 'CAG': 18, 'CAU': 19, 'CCA': 20, 'CCC': 21, 'CCG': 22, 'CCU': 23,
+    'CGA': 24, 'CGC': 25, 'CGG': 26, 'CGU': 27, 'CUA': 28, 'CUC': 29, 'CUG': 30, 'CUU': 31,
+    'GAA': 32, 'GAC': 33, 'GAG': 34, 'GAU': 35, 'GCA': 36, 'GCC': 37, 'GCG': 38, 'GCU': 39,
+    'GGA': 40, 'GGC': 41, 'GGG': 42, 'GGU': 43, 'GUA': 44, 'GUC': 45, 'GUG': 46, 'GUU': 47,
+    'UAA': 48, 'UAC': 49, 'UAG': 50, 'UAU': 51, 'UCA': 52, 'UCC': 53, 'UCG': 54, 'UCU': 55,
+    'UGA': 56, 'UGC': 57, 'UGG': 58, 'UGU': 59, 'UUA': 60, 'UUC': 61, 'UUG': 62, 'UUU': 63,
+}
 
 
-def CalculateMatrix(data, order):
-    matrix = np.zeros((len(data[0]) - 2, 64))
-    for i in range(len(data[0]) - 2):
+def _calculate_matrix(data, order):
+    size = len(data[0])
+
+    matrix = np.zeros((size - 2, 64))
+    for i in range(size - 2):
         for j in range(len(data)):
             matrix[i][order[data[j][i:i + 3]]] += 1
 
     return matrix
+
+
+class Encoder(BaseEstimator, TransformerMixin):
+    def __init__(self):
+        self._positive_size = None
+        self._negative_size = None
+        self._positives_matrix = None
+        self._negatives_matrix = None
+
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        positives = bunch.samples[bunch.targets == 1]
+        negatives = bunch.samples[bunch.targets == 0]
+
+        self._positives_matrix = _calculate_matrix(positives['sequence'].values, TRI_NUCLEOTIDES_DICT)
+        self._negatives_matrix = _calculate_matrix(negatives['sequence'].values, TRI_NUCLEOTIDES_DICT)
+
+        self._positive_size = len(positives)
+        self._negative_size = len(negatives)
+
+        return self.transform(bunch)
+
+    def transform(self, bunch: SeqBunch) -> SeqBunch:
+        if self._positive_size is None:
+            raise 'Call `fit` before calling `transform` because this encoding needs collective sequence information'
+
+        sequences = (bunch.samples['sequence'] if 'sequence' in bunch.samples else bunch.samples[0]).values
+
+        new_samples = []
+        for i in range(len(sequences)):
+
+            new_sample = []
+            for j in range(len(sequences[i]) - 2):
+                kmer = sequences[i][j: j + 3]
+                p_size, n_size = self._positive_size, self._negative_size
+
+                p_number = self._positives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
+                if bunch.targets[i] == 1 and p_number > 0:
+                    p_size -= 1
+                    p_number -= 1
+
+                n_number = self._negatives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
+                if bunch.targets[i] == 0 and n_number > 0:
+                    n_size -= 1
+                    n_number -= 1
+
+                new_sample.append(p_number / p_size - n_number / n_size)
+
+            new_samples.append(new_sample)
+
+        return SeqBunch(
+            description=bunch.description,
+            targets=bunch.targets,
+            samples=DataFrame(
+                data=new_samples,
+                columns=[f'pstnpss_{i}' for i in range(len(self._positives_matrix))]
+            )
+        )

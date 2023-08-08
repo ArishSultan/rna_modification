@@ -1,8 +1,9 @@
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from ...utils.features import encode_df
 from ...data import Species
+from ...utils.features import encode_df
+from ...features.encodings.pstnpss import TRI_NUCLEOTIDES_DICT as ORDER
 
 HS_NEG = [
     [138.0, 54.0, 63.0, 84.0, 64.0, 74.0, 0.0, 62.0, 86.0, 58.0, 56.0, 47.0, 20.0, 37.0, 62.0, 88.0, 49.0, 88.0, 62.0,
@@ -564,14 +565,6 @@ SC_POS = [
      21.0, 23.0, 3.0, 5.0, 9.0, 18.0, 13.0, 12.0, 17.0, 9.0, 9.0, 16.0, 19.0, 28.0, 15.0, 7.0, 28.0, 13.0, 24.0, 7.0,
      17.0, 20.0, 9.0, 14.0, 41.0, 13.0, 9.0, 14.0, 12.0, 15.0, 14.0, 11.0, 19.0, 16.0, 12.0, 15.0, 15.0, 37.0, 20.0,
      16.0, 19.0, 16.0, 19.0, 34.0, 36.0]]
-
-ORDER = {"AAA": 0, "AAC": 1, "AAG": 2, "AAU": 3, "ACA": 4, "ACC": 5, "ACG": 6, "ACU": 7, "AGA": 8, "AGC": 9, "AGG": 10,
-         "AGU": 11, "AUA": 12, "AUC": 13, "AUG": 14, "AUU": 15, "CAA": 16, "CAC": 17, "CAG": 18, "CAU": 19, "CCA": 20,
-         "CCC": 21, "CCG": 22, "CCU": 23, "CGA": 24, "CGC": 25, "CGG": 26, "CGU": 27, "CUA": 28, "CUC": 29, "CUG": 30,
-         "CUU": 31, "GAA": 32, "GAC": 33, "GAG": 34, "GAU": 35, "GCA": 36, "GCC": 37, "GCG": 38, "GCU": 39, "GGA": 40,
-         "GGC": 41, "GGG": 42, "GGU": 43, "GUA": 44, "GUC": 45, "GUG": 46, "GUU": 47, "UAA": 48, "UAC": 49, "UAG": 50,
-         "UAU": 51, "UCA": 52, "UCC": 53, "UCG": 54, "UCU": 55, "UGA": 56, "UGC": 57, "UGG": 58, "UGU": 59, "UUA": 60,
-         "UUC": 61, "UUG": 62, "UUU": 63}
 
 
 def encode(sequence: str, species: Species = Species.human) -> list[float]:
