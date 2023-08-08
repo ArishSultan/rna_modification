@@ -1,9 +1,8 @@
-import pickle
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import kmer
-from ...utils import get_path
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df, get_info_file
 
 _K_2_INDEX = {'AA': 0, 'AC': 1, 'AG': 2, 'AU': 3,
@@ -87,45 +86,23 @@ def encode(sequence: str, info: tuple, k=2, lambda0: float = 1, weight: float = 
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    """
-    A transformer that applies the ANF encoding technique to DNA/RNA sequences.
-
-    This transformer takes a DataFrame of DNA/RNA sequences and applies the ANF
-    encoding technique to each sequence. The resulting DataFrame contains a list
-    of floats representing the ANF of each sequence.
-
-    Example usage:
-    >>> from pandas import DataFrame
-    >>> from src.features import anf
-    >>> encoder = anf.Encoder()
-    >>> sequences = DataFrame(["CAUGGAG", "ACGTACGTACGT"])
-    >>> encoded_sequences = encoder.fit_transform(sequences)
-    """
-
     def __init__(self, k=2, lambda0: float = 1, weight: float = 0):
         self.k = k
         self.weight = weight
         self.lambda0 = lambda0
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        """
-        Implementation of base fit_transform.
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        info = get_info()
 
-        Since, there is nothing in `p` encoding that needs fitting so, it just
-        transforms all the sequences to their `anf` encoding.
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(
+                bunch.samples,
+                lambda seq: encode(seq, info, self.k, self.lambda0, self.weight),
+                'pse_knc',
+            )
+        )
 
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of ANF-encoded sequences.
-        """
-        info = get_info('PseKNC')
-
-        return encode_df(x, lambda seq: encode(seq, info, self.k, self.lambda0, self.weight), 'pse_knc')
-
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of ANF-encoded sequences.
-        """
+    def transform(self, x: SeqBunch) -> SeqBunch:
         return self.fit_transform(x)

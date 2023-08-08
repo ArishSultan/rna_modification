@@ -1,8 +1,8 @@
-from pandas import DataFrame
 from itertools import product
 from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 
 
@@ -151,51 +151,17 @@ def encode(sequence: str, k: int = 2, upto: bool = False, normalize: bool = Fals
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    """
-    A transformer that applies the Kmer encoding technique to DNA/RNA sequences.
-
-    This transformer takes a DataFrame of DNA/RNA sequences and applies the Kmer
-    encoding technique to each sequence. The resulting DataFrame contains a list
-    of floats representing the Kmer of each sequence.
-
-    Example usage:
-    >>> from pandas import DataFrame
-    >>> from src.features import kmer
-    >>> encoder = kmer.Encoder(k=3)
-    >>> sequences = DataFrame(["CAUGGAG", "ACGTACGTACGT"])
-    >>> encoded_sequences = encoder.fit_transform(sequences)
-    """
-
     def __init__(self, k: int = 2, upto: bool = False, normalize: bool = False):
-        """
-        Creates an instance of Kmer Encoder with default parameters
-
-        Args:
-        k (int): Length of k-mer
-        upto (bool): If True, generates all k-mers of lengths upto k
-        normalize (bool): If True, returns frequency instead of count
-        """
         self.k = k
         self.upto = upto
         self.normalize = normalize
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        """
-        Implementation of base fit_transform.
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq, self.k, self.upto, self.normalize), 'kmer')
+        )
 
-        Since, there is nothing in `kmer` encoding that needs fitting so, it just
-        transforms all the sequences to their `kmer` encoding.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Kmer-encoded sequences.
-        """
-        return encode_df(x, lambda seq: encode(seq, self.k, self.upto, self.normalize), 'kmer')
-
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Kmer-encoded sequences.
-        """
+    def transform(self, x: SeqBunch) -> SeqBunch:
         return self.fit_transform(x)

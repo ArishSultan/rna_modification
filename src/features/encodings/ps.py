@@ -2,6 +2,7 @@ from pandas import DataFrame
 from itertools import product
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 
 
@@ -36,33 +37,16 @@ def encode(sequence: str, k: int, ps_dict: dict | None = None) -> list[float]:
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    """
-    A transformer that applies the ANF encoding technique to DNA/RNA sequences.
-
-    This transformer takes a DataFrame of DNA/RNA sequences and applies the ANF
-    encoding technique to each sequence. The resulting DataFrame contains a list
-    of floats representing the ANF of each sequence.
-
-    Example usage:
-    >>> from pandas import DataFrame
-    >>> from src.features import anf
-    >>> encoder = anf.Encoder()
-    >>> sequences = DataFrame(["CAUGGAG", "ACGTACGTACGT"])
-    >>> encoded_sequences = encoder.fit_transform(sequences)
-    """
-
     def __init__(self, k=2):
         self.k = k
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
         ps_dict = create_ps_dict(self.k)
-        return encode_df(x, lambda seq: encode(seq, self.k, ps_dict), f'ps_{self.k}')
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq, self.k, ps_dict), f'ps_{self.k}')
+        )
 
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of ANF-encoded sequences.
-        """
+    def transform(self, x: SeqBunch) -> SeqBunch:
         return self.fit_transform(x)

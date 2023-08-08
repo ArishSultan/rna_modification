@@ -1,6 +1,6 @@
-from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 
 
@@ -51,38 +51,12 @@ def encode(sequence: str) -> list[float]:
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    """
-    A transformer that applies the Binary encoding technique to DNA/RNA sequences.
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, encode, 'binary'),
+        )
 
-    This transformer takes a DataFrame of DNA/RNA sequences and applies the Binary
-    encoding technique to each sequence. The resulting DataFrame contains a list
-    of floats representing the Binary of each sequence.
-
-    Example usage:
-    >>> from pandas import DataFrame
-    >>> from src.features import binary
-    >>> encoder = binary.Encoder()
-    >>> sequences = DataFrame(["CAUGGAG", "ACGTACGTACGT"])
-    >>> encoded_sequences = encoder.fit_transform(sequences)
-    """
-
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        """
-        Implementation of base fit_transform.
-
-        Since, there is nothing in `binary` encoding that needs fitting so, it just
-        transforms all the sequences to their `binary` encoding.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Binary-encoded sequences.
-        """
-        return encode_df(x, encode, 'binary')
-
-    def transform(self, x: DataFrame) -> DataFrame:
-        """
-        Just a wrapper around `fit_transform` that calls the base method.
-
-        :param x: A DataFrame of DNA/RNA sequences.
-        :return: A DataFrame of Binary-encoded sequences.
-        """
+    def transform(self, x: SeqBunch) -> SeqBunch:
         return self.fit_transform(x)

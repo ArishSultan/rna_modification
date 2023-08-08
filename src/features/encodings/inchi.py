@@ -1,7 +1,7 @@
 from rdkit import Chem
-from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 
 
@@ -11,10 +11,14 @@ def encode(sequence: str) -> list[str]:
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        return encode_df(x, lambda seq: encode(seq), 'inchi')
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq), 'inchi')
+        )
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: SeqBunch) -> SeqBunch:
         """
         Just a wrapper around `fit_transform` that calls the base method.
 
