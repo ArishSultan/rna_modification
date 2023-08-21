@@ -178,11 +178,20 @@ def generate_pr_curve(data):
         'Precision-Recall curve',
         r'''    \addlegendentry{Precision-Recall curve}
 
-    \addplot [semithick, blue, const plot mark left, opacity=0.2] table {
+   \addplot[black, opacity=0] table {
+      0 0
+      1 1
+    };
+    \addplot [semithick, blue, const plot mark left, opacity=0.3] table {
 %s
-    };''' % (
-            # '\n'.join(filler),
-            '\n'.join(entries))
+      1 0
+    };
+    \addplot [semithick, blue, const plot mark left, opacity=0.1, fill=blue, fill opacity=0.1] table {
+%s
+    } \closedcycle;''' % (
+            '\n'.join(entries),
+            '\n'.join(entries),
+        )
     )
 
 
@@ -190,7 +199,10 @@ def generate_cg_curve(data):
     return _generate_gain_curve(data, 'Gain', 'Cumulative gain curve', False)
 
 
-def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=False):
+def generate_latex_report(report: Report, name: str, out: str | Path, generate_pdf=False):
+    if type(out) is str:
+        out = Path(out)
+
     out.mkdir(exist_ok=True)
 
     with open(out / f'{name}.tex', 'w') as file:
@@ -241,7 +253,10 @@ def generate_latex_report(report: Report, name: str, out: Path, generate_pdf=Fal
         subprocess.run(['tectonic', str(out / f'{name}.tex')])
 
 
-def generate_kfold_latex_report(reports: list[Report], name: str, out: Path, generate_pdf=False):
+def generate_kfold_latex_report(reports: list[Report], name: str, out: str | Path, generate_pdf=False):
+    if type(out) is str:
+        out = Path(out)
+
     out.mkdir(exist_ok=True)
 
     generated = []

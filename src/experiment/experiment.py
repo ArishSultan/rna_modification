@@ -37,7 +37,7 @@ class Experiment:
                 'train': k_fold_reports
             }
 
-        encoded_test = self.encoding.transform()
+        encoded_test = self.encoding.transform(self.test)
         test_y = encoded_test.targets
         test_x = encoded_test.samples
 
