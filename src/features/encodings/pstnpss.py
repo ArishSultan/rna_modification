@@ -16,6 +16,30 @@ TRI_NUCLEOTIDES_DICT = {
 }
 
 
+def encode(sequence: str, sizes: tuple[int, int], matrices: tuple[list, list], target: int | None):
+    positives_matrix, negatives_matrix = matrices
+
+    new_sample = []
+    for j in range(len(sequence) - 2):
+        kmer = sequence[j: j + 3]
+        p_size, n_size = sizes
+
+        p_number = positives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
+        if target is not None:
+            if target == 1 and p_number > 0:
+                p_size -= 1
+                p_number -= 1
+
+        n_number = negatives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
+        if target is not None:
+            if target == 0 and n_number > 0:
+                n_size -= 1
+                n_number -= 1
+
+        new_sample.append(p_number / p_size - n_number / n_size)
+    return new_sample
+
+
 def _calculate_matrix(data, order):
     size = len(data[0])
 
@@ -34,7 +58,15 @@ class Encoder(BaseEstimator, TransformerMixin):
         self._positives_matrix = None
         self._negatives_matrix = None
 
-    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+    @property
+    def sizes(self) -> tuple[int, int]:
+        return self._positive_size, self._negative_size
+
+    @property
+    def matrices(self) -> tuple[list, list]:
+        return self._positives_matrix, self._negatives_matrix
+
+    def fit(self, bunch: SeqBunch):
         positives = bunch.samples[bunch.targets == 1]
         negatives = bunch.samples[bunch.targets == 0]
 
@@ -44,9 +76,16 @@ class Encoder(BaseEstimator, TransformerMixin):
         self._positive_size = len(positives)
         self._negative_size = len(negatives)
 
-        return self.transform(bunch)
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        self.fit(bunch)
+        return self.transform(bunch, consider_target=False)
 
-    def transform(self, bunch: SeqBunch) -> SeqBunch:
+    def transform(self, bunch: SeqBunch, consider_target: bool = False) -> SeqBunch:
+        """
+        :param bunch:
+        :param consider_target: should only be set to true in case of training data.
+        :return:
+        """
         if self._positive_size is None:
             raise 'Call `fit` before calling `transform` because this encoding needs collective sequence information'
 
@@ -54,25 +93,8 @@ class Encoder(BaseEstimator, TransformerMixin):
 
         new_samples = []
         for i in range(len(sequences)):
-
-            new_sample = []
-            for j in range(len(sequences[i]) - 2):
-                kmer = sequences[i][j: j + 3]
-                p_size, n_size = self._positive_size, self._negative_size
-
-                p_number = self._positives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-                if bunch.targets[i] == 1 and p_number > 0:
-                    p_size -= 1
-                    p_number -= 1
-
-                n_number = self._negatives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-                if bunch.targets[i] == 0 and n_number > 0:
-                    n_size -= 1
-                    n_number -= 1
-
-                new_sample.append(p_number / p_size - n_number / n_size)
-
-            new_samples.append(new_sample)
+            new_samples.append(
+                encode(sequences[i], self.sizes, self.matrices, bunch.targets[i] if consider_target else None))
 
         return SeqBunch(
             description=bunch.description,

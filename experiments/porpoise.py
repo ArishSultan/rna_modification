@@ -7,7 +7,7 @@ human_experiment = Experiment(
     porpoise.Factory(),
     load_psi(Species.human, independent=True),
     load_psi(Species.human, independent=False),
-    porpoise.Encoder(Species.human),
+    porpoise.EncoderNew(),
     k=10,
 ).run()
 
@@ -18,7 +18,7 @@ yeast_experiment = Experiment(
     porpoise.Factory(),
     load_psi(Species.yeast, independent=True),
     load_psi(Species.yeast, independent=False),
-    porpoise.Encoder(Species.yeast),
+    porpoise.EncoderNew(),
     k=10,
 ).run()
 
@@ -29,7 +29,7 @@ mouse_experiment = Experiment(
     porpoise.Factory(),
     None,
     load_psi(Species.mouse, independent=False),
-    porpoise.Encoder(Species.mouse),
+    porpoise.EncoderNew(),
     k=10,
 ).run()
 
