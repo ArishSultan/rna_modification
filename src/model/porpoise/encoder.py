@@ -4,6 +4,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import pstnpss
 from ...data import Species
+from ...data.seq_bunch import SeqBunch
 from ...utils.features import encode_df
 from ...features.encodings import pse_knc, binary
 
@@ -25,6 +26,22 @@ def encode(sequence: str, species: Species, pse_knc_info=None):
     return x0 + x0 + x1 + x2
 
 
+class EncoderNew(BaseEstimator, TransformerMixin):
+    def __init__(self, pse_knc_info=None):
+        if pse_knc_info is None:
+            self.pse_knc_info = pse_knc.get_info()
+
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq), 'porpoise')
+        )
+
+    def transform(self, bunch: SeqBunch) -> SeqBunch:
+        return self.fit_transform(bunch)
+
+
 class Encoder(BaseEstimator, TransformerMixin):
     def __init__(self, species: Species, pse_knc_info=None):
         self.species = species
@@ -32,8 +49,12 @@ class Encoder(BaseEstimator, TransformerMixin):
         if pse_knc_info is None:
             self.pse_knc_info = pse_knc.get_info()
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        return encode_df(x, lambda seq: encode(seq, self.species, self.pse_knc_info), 'porpoise')
+    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
+        return SeqBunch(
+            targets=bunch.targets,
+            description=bunch.description,
+            samples=encode_df(bunch.samples, lambda seq: encode(seq, self.species), 'porpoise')
+        )
 
-    def transform(self, x: DataFrame) -> DataFrame:
-        return self.fit_transform(x)
+    def transform(self, bunch: SeqBunch) -> SeqBunch:
+        return self.fit_transform(bunch)
