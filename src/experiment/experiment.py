@@ -1,5 +1,3 @@
-from sklearn.base import TransformerMixin
-
 from sklearn.model_selection import KFold
 
 from .report import Report
