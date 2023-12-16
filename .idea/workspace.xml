@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2da67ed-46b4-4493-a15b-53a71ee81ba7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/rna_modification.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/prepare_data.py" afterDir="false" />
+    <list default="true" id="d2da67ed-46b4-4493-a15b-53a71ee81ba7" name="Changes" comment=":tada: initial commit">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.root" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/path.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/prepare_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/prepare_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,9 +38,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.prepare_data.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "v2",
+    "last_opened_file_path": "/Users/arish/Workspace/experiments/rna_modification",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -50,11 +52,18 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/utils" />
+      <recent name="$PROJECT_DIR$/data/raw" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
       <recent name="$PROJECT_DIR$/scripts" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.prepare_data">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="rna_modification" />
       <option name="ENV_FILES" value="" />
@@ -78,6 +87,34 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="prepare_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rna_modification" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/prepare_data.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.prepare_data" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -94,12 +131,25 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1702742825288</updated>
-      <workItem from="1702742827915" duration="404000" />
+      <workItem from="1702742827915" duration="3543000" />
     </task>
+    <task id="LOCAL-00001" summary=":tada: initial commit">
+      <option name="closed" value="true" />
+      <created>1702743249121</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1702743249121</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value=":tada: initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value=":tada: initial commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -111,5 +161,8 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/rna_modification$prepare_data.coverage" NAME="prepare_data Coverage Results" MODIFIED="1702753314227" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>
