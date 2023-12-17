@@ -1,5 +1,5 @@
-from utils import get_path
 from pandas import read_csv
+from src.utils import get_path
 
 from . import SeqBunch, Species, Modification
 

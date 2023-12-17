@@ -3,7 +3,7 @@ import random
 import pandas as pd
 
 from pathlib import Path
-from utils import get_path
+from src.utils import get_path
 
 
 def process_data(data_dir: Path):

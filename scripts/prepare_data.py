@@ -2,7 +2,7 @@ import os
 import tarfile
 
 from pathlib import Path
-from utils import get_path
+from src.utils import get_path
 from collections import namedtuple
 
 SpecieInfo = namedtuple("SpecieInfo", ["specie_name", "modification_name"])

@@ -1,0 +1,15 @@
+name: 'Psi PSTNPSS Ensemble'
+
+models:
+  -
+  - asd2
+
+datasets:
+  - asd
+  - asd
+  - ads
+
+encodings:
+  - encoding1
+  - encoding2
+  - encoding3
