@@ -28,7 +28,7 @@ def _main():
     yeast_dataset_report = similarity_report(yeast_dataset, yeast_benchmark_training_dataset, 5)
     yeast_filtered_dataset = separate_unique_sequences(yeast_dataset, yeast_dataset_report)
 
-    directory = DATASET_PATH / 'filtered' / 'psi' / 'training'
+    directory = DATASET_PATH / 'intermediate' / 'psi' / 'filtered' / 'training'
     directory.mkdir(parents=True, exist_ok=True)
 
     save_dataset(directory / 'h.sapiens.csv', human_filtered_dataset)
