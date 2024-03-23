@@ -8,8 +8,8 @@ from src.utils import get_path
 
 def process_data(data_dir: Path):
     # Define output directory
-    processed_dir = data_dir / "data" / "processed"
-    intermediate_dir = data_dir / "data" / "intermediate"
+    processed_dir = data_dir / "dataset" / "processed"
+    intermediate_dir = data_dir / "dataset" / "intermediate"
 
     # Loop through modification directories (e.g., psi, m6a)
     for modification_dir in os.listdir(intermediate_dir):
@@ -19,7 +19,7 @@ def process_data(data_dir: Path):
         if not os.path.isdir(os.path.join(intermediate_dir, modification_dir)):
             continue
 
-        # Create corresponding directory in processed data
+        # Create corresponding directory in processed dataset
         (processed_dir / modification_dir).mkdir(exist_ok=True)
 
         for file in os.listdir(intermediate_dir / modification_dir):
@@ -29,7 +29,7 @@ def process_data(data_dir: Path):
                 processed_dir / modification_dir / file
             )
 
-    print(f"Processed data and generated negative samples in {processed_dir}")
+    print(f"Processed dataset and generated negative samples in {processed_dir}")
 
 
 def generate_negative_samples(file_location, modification_type, out_location):
@@ -45,12 +45,17 @@ def generate_negative_samples(file_location, modification_type, out_location):
     else:
         raise ValueError(f"Unknown modification type: {modification_type}")
 
+    print(file_location)
     # Generate negative samples with non-overlapping sequences
     negative_samples = []
     while len(negative_samples) < len(df_pos):
         random_sequence = generate_random_sequence(41, central_nucleotide)
         if random_sequence not in existing_sequences:
             negative_samples.append(random_sequence)
+
+        print(f'\r\r\r\r\r\r\r\r\r\r\r\r\r', end='')
+        print(f'{len(negative_samples)} / {len(df_pos)}', end='')
+    print()
 
     # Combine positive and negative samples
     combined_samples = pd.concat([df_pos, pd.DataFrame({0: negative_samples, 1: 0})], ignore_index=True)

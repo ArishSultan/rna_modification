@@ -2,7 +2,7 @@ from sklearn.model_selection import KFold
 
 from .report import Report
 from ..model import ModelFactory
-from ..data.seq_bunch import SeqBunch
+from ..dataset.seq_bunch import SeqBunch
 
 
 class Experiment:

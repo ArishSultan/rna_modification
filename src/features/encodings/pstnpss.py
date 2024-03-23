@@ -78,7 +78,7 @@ class Encoder(BaseEstimator, TransformerMixin):
 
     def fit_transform(self, x: DataFrame, y: Series, **kwargs) -> DataFrame:
         self.fit(x, y)
-        return self.transform(x, consider_target=self.consider_train_target)
+        return self.transform(x)
 
     def transform(self, x: DataFrame) -> DataFrame:
         if self._positive_size is None:

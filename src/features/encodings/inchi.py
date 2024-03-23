@@ -1,4 +1,4 @@
-from rdkit import Chem
+# from rdkit import Chem
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -6,8 +6,9 @@ from ...utils.features import encode_df
 
 
 def encode(sequence: str) -> list[str]:
-    mol = Chem.MolFromSequence(sequence, flavor=5)
-    return list(str(Chem.MolToInchi(mol))) if mol else list()
+    pass
+    # mol = Chem.MolFromSequence(sequence, flavor=5)
+    # return list(str(Chem.MolToInchi(mol))) if mol else list()
 
 
 class Encoder(BaseEstimator, TransformerMixin):

@@ -161,5 +161,5 @@ cython_debug/
 
 # Directories that contain heavy files, the content inside these directories can be computed on demand so, no need to add
 # these to github
-data
+dataset
 dump

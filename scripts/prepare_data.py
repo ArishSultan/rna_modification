@@ -40,13 +40,13 @@ def process_file(filename: str, tar, member):
 
 
 def prepare_data(root: Path):
-    raw_data_dir = root / "data" / "raw"
-    intermediate_data_dir = root / "data" / "intermediate"
+    raw_data_dir = root / "dataset" / "raw"
+    intermediate_data_dir = root / "dataset" / "intermediate"
 
     # Create the intermediate directory if it doesn't exist
     intermediate_data_dir.mkdir(exist_ok=True)
 
-    # Get all files in the raw data directory
+    # Get all files in the raw dataset directory
     for filename in os.listdir(raw_data_dir):
         filepath = os.path.join(raw_data_dir, filename)
 

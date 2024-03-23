@@ -1,9 +1,9 @@
 import numpy as np
 from pandas import DataFrame, Series
-import scikitplot
+# import scikitplot
 
 import sklearn.metrics as metrics
-from scikitplot.helpers import cumulative_gain_curve
+# from scikitplot.helpers import cumulative_gain_curve
 
 
 class Report:
@@ -135,27 +135,27 @@ def _calculate_precision_recall_curve(y, y_pred_proba):
 
 
 def _calculate_cumulative_gain_curve(y, y_pred_proba):
-    percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0])
-    percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1])
+    # percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0])
+    # percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1])
 
     return {
-        'gains1': gains1,
-        'gains2': gains2,
-        'percentages': percentages,
+        'gains1': [],
+        'gains2': [],
+        'percentages': [],
     }
 
 
 def _calculate_lift_curve(y, y_pred_proba):
     classes = np.unique(y)
-    percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0], classes[0])
-    percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1], classes[1])
+    # percentages, gains1 = cumulative_gain_curve(y, y_pred_proba[:, 0], classes[0])
+    # percentages, gains2 = cumulative_gain_curve(y, y_pred_proba[:, 1], classes[1])
 
-    percentages = percentages[1:]
-    gains1 = gains1[1:] / percentages
-    gains2 = gains2[1:] / percentages
+    # percentages = percentages[1:]
+    # gains1 = gains1[1:] / percentages
+    # gains2 = gains2[1:] / percentages
 
     return {
-        'gains1': gains1,
-        'gains2': gains2,
-        'percentages': percentages,
+        'gains1': [],
+        'gains2': [],
+        'percentages': [],
     }

@@ -306,7 +306,7 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: str | Pat
 \definecolor{steelblue}{RGB}{31,119,180}
 \definecolor{darkorange}{RGB}{255,127,14}
 
-`\setlength{\paperheight}{12in}
+\setlength{\paperheight}{12in}
 
 \begin{document}
 
