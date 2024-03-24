@@ -3,7 +3,7 @@ import tarfile
 
 from pathlib import Path
 from src.utils import get_path
-from collections import namedtuple
+from collections import namedtuple, Counter
 
 SpecieInfo = namedtuple("SpecieInfo", ["specie_name", "modification_name"])
 
@@ -29,12 +29,20 @@ def parse_filename(filename):
 
 
 def process_file(filename: str, tar, member):
+    sequences = []
+
+    for line in tar.extractfile(member):
+        if line.strip():
+            parts = line.split(bytes("\t", "utf-8"))
+            sequence = parts[18].decode("utf-8").replace("T", "U")
+
+            sequences.append(sequence)
+
+    counted_sequences = Counter(sequences)
+
     with open(filename, "w") as outfile:
-        for line in tar.extractfile(member):
-            # Check if line is not empty
-            if line.strip():
-                parts = line.split(bytes("\t", "utf-8"))
-                outfile.write(f"{parts[18].decode("utf-8").replace("T", "U")}, 1\n")
+        for sequence in counted_sequences:
+            outfile.write(f"{sequence},1,{counted_sequences[sequence]}\n")
 
     os.rename(filename, str(filename).replace('.bed', '.csv'))
 

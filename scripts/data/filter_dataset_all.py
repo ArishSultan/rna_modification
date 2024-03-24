@@ -33,7 +33,7 @@ def _main():
     mouse_dataset_report = similarity_report(mouse_dataset, mouse_benchmark_dataset)
     mouse_filtered_dataset = separate_unique_sequences(mouse_dataset, mouse_dataset_report)
 
-    directory = DATASET_PATH / 'intermediate' / 'psi' / 'filtered'
+    directory = DATASET_PATH / 'intermediate' / 'psi' / 'filtered' / 'all'
     directory.mkdir(parents=True, exist_ok=True)
 
     save_dataset(directory / 'h.sapiens.csv', human_filtered_dataset)
