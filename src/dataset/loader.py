@@ -13,17 +13,25 @@ def load_benchmark_dataset(species: Species, modification: Modification, indepen
 
     return SeqBunch(
         targets=data[1],
-        samples=data.drop(1, axis=1).rename({0: 'sequence'}, axis=1),
+        samples=data[0],
     )
 
 
-def load_dataset(species: Species, modification: Modification) -> SeqBunch:
+def load_dataset(species: Species, modification: Modification, filtered=None, subsample=False) -> SeqBunch:
     root_dir = get_path()
-    file_path = root_dir / 'dataset' / 'processed' / modification.value / f'{species.value}.csv'
+    file_path = root_dir / 'dataset' / 'processed' / modification.value
+
+    if subsample:
+        file_path = file_path / 'subsample'
+
+    if filtered is not None:
+        file_path = file_path / 'filtered' / filtered
+
+    file_path = file_path / f'{species.value}.csv'
 
     data = read_csv(file_path, header=None)
 
     return SeqBunch(
         targets=data[1],
-        samples=data.drop(1, axis=1).rename({0: 'sequence'}, axis=1),
+        samples=data[0],
     )

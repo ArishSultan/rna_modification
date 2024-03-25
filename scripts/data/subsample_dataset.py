@@ -35,12 +35,16 @@ def _main():
 
     _augmented_seq = {}
 
+    files = []
     for i in _INTERMEDIATE_DIR.glob('**/**'):
         for j in i.iterdir():
             if not j.is_file() or not j.name.endswith('.csv'):
                 continue
 
-            _process_csv_file(j)
+            files.append(j)
+
+    for file in files:
+        _process_csv_file(file)
 
 
 if __name__ == '__main__':
