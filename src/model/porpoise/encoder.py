@@ -2,8 +2,7 @@ from operator import itemgetter
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from . import pstnpss
-from ...data import Species
-from ...data.seq_bunch import SeqBunch
+from ...dataset import Species, SeqBunch
 from ...utils.features import encode_df, encode_df_indexed
 from ...features.encodings import pse_knc, binary, pstnpss as pstnpss_new
 
@@ -74,7 +73,6 @@ class Encoder(BaseEstimator, TransformerMixin):
     def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
         return SeqBunch(
             targets=bunch.targets,
-            description=bunch.description,
             samples=encode_df(bunch.samples, lambda seq: encode(seq, self.species, self.pse_knc_info), 'porpoise')
         )
 

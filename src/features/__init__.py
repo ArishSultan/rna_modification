@@ -1,1 +1,1 @@
-from .encodings import anf, binary, dnc, inchi, kmer, knc, pse_knc, tnc
+from .encodings import anf, bert, binary, dnc, inchi, kmer, knc, pp, prob, pse_knc, pstnpss, tnc

@@ -15,7 +15,7 @@ def load_benchmark_dataset(species: Species, modification: Modification, indepen
 
     return SeqBunch(
         targets=data[1],
-        samples=data.drop([1, 2], axis=1).rename({0: 'sequence'}, axis=1),
+        samples=data.drop(1, axis=1).rename({0: 'sequence'}, axis=1),
     )
 
 
@@ -33,10 +33,16 @@ def load_dataset(species: Species, modification: Modification, filtered=None, su
 
     data = read_csv(file_path, header=None)
 
-    return SeqBunch(
-        targets=data[1],
-        samples=data.drop([1, 2], axis=1).rename({0: 'sequence'}, axis=1),
-    )
+    if 2 in data:
+        return SeqBunch(
+            targets=data[1],
+            samples=data.drop([1, 2], axis=1).rename({0: 'sequence'}, axis=1),
+        )
+    else:
+        return SeqBunch(
+            targets=data[1],
+            samples=data.drop(1, axis=1).rename({0: 'sequence'}, axis=1),
+        )
 
 
 def split_balanced(x, y, test_size=0.2):

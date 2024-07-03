@@ -6,17 +6,25 @@ from ..dataset.seq_bunch import SeqBunch
 
 
 class Experiment:
-    def __init__(self, factory: ModelFactory, test: SeqBunch | None, train: SeqBunch, encoding, k=5):
+    def __init__(self, factory: ModelFactory, test: SeqBunch | None, train: SeqBunch, encoding, k=5,
+                 should_fit_encoder=True):
         self.k = k
         self.test = test
         self.train = train
         self.factory = factory
         self.encoding = encoding
+        self.should_fit_encoder = should_fit_encoder
 
     def run(self):
         k_fold = KFold(n_splits=self.k, random_state=42, shuffle=True)
 
-        x = self.encoding.fit_transform(self.train.samples, y=self.train.targets)
+        if self.encoding is not None:
+            if self.should_fit_encoder:
+                x = self.encoding.fit_transform(self.train.samples, y=self.train.targets)
+            else:
+                x = self.encoding.transform(self.train.samples)
+        else:
+            x = self.train.samples
         y = self.train.targets
 
         k_fold_reports = []
@@ -34,7 +42,10 @@ class Experiment:
                 'train': k_fold_reports
             }
 
-        test_x = self.encoding.transform(self.test.samples)
+        if self.encoding is not None:
+            test_x = self.encoding.transform(self.test.samples)
+        else:
+            test_x = self.test.samples
         test_y = self.test.targets
 
         model = self.factory.create_model()

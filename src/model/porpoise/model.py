@@ -42,7 +42,7 @@ class Model(BaseModel):
         )
 
     def fit(self, x, y):
-        self._model.fit(x, y)
+        return self._model.fit(x, y)
 
     def predict(self, x):
         return self._model.predict(x)

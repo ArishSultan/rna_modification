@@ -1,7 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from ...data import Species
-from ...data.seq_bunch import SeqBunch
+from ...dataset import Species, SeqBunch
 from ...utils.features import encode_df
 from ...features.encodings.pstnpss import TRI_NUCLEOTIDES_DICT as ORDER
 

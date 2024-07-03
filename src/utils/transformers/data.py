@@ -19,7 +19,7 @@ def encode_seq_bunch(
         tokenizer: PreTrainedTokenizer,
         split_chars=True
 ) -> tuple[list[BatchEncoding], list[int]]:
-    return list(map(lambda x: encode_sequence(x, tokenizer, split_chars), bunch.samples.values)), bunch.targets.values
+    return list(map(lambda x: encode_sequence(x[0], tokenizer, split_chars), bunch.samples.values)), bunch.targets.values
 
 
 def make_dataloader(data: list[BatchEncoding], targets: list[int]):
