@@ -19,7 +19,7 @@ def load_benchmark_dataset(species: Species, modification: Modification, indepen
     )
 
 
-def load_dataset(species: Species, modification: Modification, filtered=None, subsample=False) -> SeqBunch:
+def load_dataset(species: Species, modification: Modification, filtered=None, subsample=False, seq_len: int = 0) -> SeqBunch:
     root_dir = get_path()
     file_path = root_dir / 'dataset' / 'processed' / modification.value
 
@@ -32,6 +32,10 @@ def load_dataset(species: Species, modification: Modification, filtered=None, su
     file_path = file_path / f'{species.value}.csv'
 
     data = read_csv(file_path, header=None)
+
+    if seq_len > 0:
+        data = data[data[0].apply(len) == 21]
+        data.reset_index(drop=True, inplace=True)
 
     if 2 in data:
         return SeqBunch(

@@ -1,9 +1,9 @@
 import torch
 
-from pandas import DataFrame
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 from transformers import AutoTokenizer, AutoModel, BertConfig
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -30,7 +30,10 @@ def encode(
     return torch.mean(hidden_states[0], dim=0).detach().numpy()
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
+    def fit(self, x: DataFrame, y: Series):
+        print('BERT encoding is unsupervised and does not need to be fitted on training data')
+
     def __init__(self, model: str, mode: str = 'max', replace: bool = False):
         config = BertConfig.from_pretrained(model)
 

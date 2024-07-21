@@ -1,6 +1,6 @@
-from pandas import DataFrame
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -27,7 +27,10 @@ def encode_nucleotide(nucleotide: str) -> list[float]:
             return [0.0, 1.0, 0.0]
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
+    def fit(self, x: DataFrame, y: Series):
+        print('NCP encoding is unsupervised and does not need to be fitted on training data')
+
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, encode, 'ncp')
 

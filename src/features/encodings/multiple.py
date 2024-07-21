@@ -1,18 +1,19 @@
-from typing import Union
-from pandas import DataFrame, concat
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, concat, Series
+
+from ..encoder import BaseEncoder
 
 
-class Encoder(BaseEstimator, TransformerMixin):
-    def __init__(self, encoders: list[Union[BaseEstimator, TransformerMixin]]):
+class Encoder(BaseEncoder):
+    def __init__(self, encoders: list[BaseEncoder]):
         self.encoders = encoders
 
-    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        encoded_frames = []
+    def fit(self, x: DataFrame, y: Series):
         for encoder in self.encoders:
-            encoded_frames.append(encoder.fit_transform(x, **kwargs))
+            encoder.fit(x, y)
 
-        return concat(encoded_frames, axis=1)
+    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
+        self.fit(x, kwargs['y'])
+        return self.fit_transform(x)
 
     def transform(self, x: DataFrame) -> DataFrame:
         encoded_frames = []

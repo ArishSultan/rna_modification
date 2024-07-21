@@ -1,96 +1,144 @@
+from collections import defaultdict
+
 import numpy as np
 from pandas import DataFrame, Series
 from sklearn.base import BaseEstimator, TransformerMixin
 
-TRI_NUCLEOTIDES_DICT = {
-    'AAA': 0, 'AAC': 1, 'AAG': 2, 'AAU': 3, 'ACA': 4, 'ACC': 5, 'ACG': 6, 'ACU': 7,
-    'AGA': 8, 'AGC': 9, 'AGG': 10, 'AGU': 11, 'AUA': 12, 'AUC': 13, 'AUG': 14, 'AUU': 15,
-    'CAA': 16, 'CAC': 17, 'CAG': 18, 'CAU': 19, 'CCA': 20, 'CCC': 21, 'CCG': 22, 'CCU': 23,
-    'CGA': 24, 'CGC': 25, 'CGG': 26, 'CGU': 27, 'CUA': 28, 'CUC': 29, 'CUG': 30, 'CUU': 31,
-    'GAA': 32, 'GAC': 33, 'GAG': 34, 'GAU': 35, 'GCA': 36, 'GCC': 37, 'GCG': 38, 'GCU': 39,
-    'GGA': 40, 'GGC': 41, 'GGG': 42, 'GGU': 43, 'GUA': 44, 'GUC': 45, 'GUG': 46, 'GUU': 47,
-    'UAA': 48, 'UAC': 49, 'UAG': 50, 'UAU': 51, 'UCA': 52, 'UCC': 53, 'UCG': 54, 'UCU': 55,
-    'UGA': 56, 'UGC': 57, 'UGG': 58, 'UGU': 59, 'UUA': 60, 'UUC': 61, 'UUG': 62, 'UUU': 63,
-}
+from . import pstnpss
+
+def calculate_trinucleotide_frequencies(sequences, l, xi):
+    forward_frequencies = defaultdict(lambda: np.zeros(64))
+    backward_frequencies = defaultdict(lambda: np.zeros(64))
+    trinucleotides = ["".join([x, y, z]) for x in "ACGU" for y in "ACGU" for z in "ACGU"]
+    trinucleotide_index = {trinucleotide: idx for idx, trinucleotide in enumerate(trinucleotides)}
+
+    for seq in sequences:
+        for i in range(l - xi - 2):
+            forward_trinucleotide = seq[i] + seq[i + xi + 1] + seq[i + xi + 2]
+            backward_trinucleotide = seq[i + xi + 2] + seq[i + xi + 1] + seq[i]
+
+            forward_frequencies[i][trinucleotide_index[forward_trinucleotide]] += 1
+            backward_frequencies[i + xi + 2][trinucleotide_index[backward_trinucleotide]] += 1
+
+    for i in range(l - xi - 2):
+        total_forward = sum(forward_frequencies[i])
+        total_backward = sum(backward_frequencies[i + xi + 2])
+
+        if total_forward > 0:
+            forward_frequencies[i] /= total_forward
+        if total_backward > 0:
+            backward_frequencies[i + xi + 2] /= total_backward
+
+    return forward_frequencies, backward_frequencies
 
 
-def encode(sequence: str, sizes: tuple[int, int], matrices: tuple[list, list]):
-    positives_matrix, negatives_matrix = matrices
+def encode_rna_sequence(seq, forward_frequencies_pos, backward_frequencies_pos, forward_frequencies_neg,
+                        backward_frequencies_neg, l, xi):
+    encoded_vector = []
+    for i in range(xi + 3, l - xi - 2):
+        forward_pos = forward_frequencies_pos[i][pstnpss.TRI_NUCLEOTIDES_DICT[seq[i] + seq[i + xi + 1] + seq[i + xi + 2]]]
+        backward_pos = backward_frequencies_pos[i][pstnpss.TRI_NUCLEOTIDES_DICT[seq[i + xi + 2] + seq[i + xi + 1] + seq[i]]]
 
-    new_sample = []
-    for j in range(len(sequence) - 2):
-        kmer = sequence[j: j + 3]
-        p_size, n_size = sizes
+        forward_neg = forward_frequencies_neg[i][pstnpss.TRI_NUCLEOTIDES_DICT[seq[i] + seq[i + xi + 1] + seq[i + xi + 2]]]
+        backward_neg = backward_frequencies_neg[i][pstnpss.TRI_NUCLEOTIDES_DICT[seq[i + xi + 2] + seq[i + xi + 1] + seq[i]]]
 
-        p_number = positives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-        # if target is not None:
-        #     if target == 1 and p_number > 0:
-        #         p_size -= 1
-        #         p_number -= 1
+        v_pos = (forward_pos + backward_pos) / 2
+        v_neg = (forward_neg + backward_neg) / 2
 
-        n_number = negatives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-        # if target is not None:
-        #     if target == 0 and n_number > 0:
-        #         n_size -= 1
-        #         n_number -= 1
+        encoded_value = v_pos - v_neg
+        encoded_vector.append(encoded_value)
 
-        new_sample.append(p_number / p_size - n_number / n_size)
-    return new_sample
+    return encoded_vector
 
 
-def _calculate_matrix(data, order):
-    size = len(data[0])
-
-    matrix = np.zeros((size - 2, 64))
-    for i in range(size - 2):
-        for j in range(len(data)):
-            matrix[i][order[data[j][i:i + 3]]] += 1
-
-    return matrix
+# Example datasets
+# D_plus = ["ACGUAGCUAGCUA", "CGUAUGCUAGCUA"]  # Positive dataset
+# D_minus = ["UAGCUAGCUAGCU", "AGCUAGCUAGCUA"]  # Negative dataset
+# l = len(D_plus[0])
+# xi_values = range(0, (l - 5) // 2 + 1)
+#
+# # Calculate frequencies for different xi values
+# forward_frequencies_pos_all = []
+# backward_frequencies_pos_all = []
+# forward_frequencies_neg_all = []
+# backward_frequencies_neg_all = []
+#
+# for xi in xi_values:
+#     forward_frequencies_pos, backward_frequencies_pos = calculate_trinucleotide_frequencies(D_plus, l, xi)
+#     forward_frequencies_neg, backward_frequencies_neg = calculate_trinucleotide_frequencies(D_minus, l, xi)
+#
+#     forward_frequencies_pos_all.append(forward_frequencies_pos)
+#     backward_frequencies_pos_all.append(backward_frequencies_pos)
+#     forward_frequencies_neg_all.append(forward_frequencies_neg)
+#     backward_frequencies_neg_all.append(backward_frequencies_neg)
+#
+# # Encode sequences
+# encoded_vectors = []
+# for seq in D_plus:
+#     encoded_vector = []
+#     for xi in xi_values:
+#         encoded_vector.extend(encode_rna_sequence(seq, forward_frequencies_pos_all[xi], backward_frequencies_pos_all[xi], forward_frequencies_neg_all[xi], backward_frequencies_neg_all[xi], l, xi))
+#     encoded_vectors.append(encoded_vector)
+#
+# for seq in D_minus:
+#     encoded_vector = []
+#     for xi in xi_values:
+#         encoded_vector.extend(encode_rna_sequence(seq, forward_frequencies_pos_all[xi], backward_frequencies_pos_all[xi], forward_frequencies_neg_all[xi], backward_frequencies_neg_all[xi], l, xi))
+#     encoded_vectors.append(encoded_vector)
+#
+# # Output the encoded vectors
+# for vec in encoded_vectors:
+#     print(vec)
 
 
 class Encoder(BaseEstimator, TransformerMixin):
-    def __init__(self, consider_train_target=False, consider_test_target=False):
-        self._positive_size = None
-        self._negative_size = None
-        self._positives_matrix = None
-        self._negatives_matrix = None
-        self.consider_test_target = consider_test_target
-        self.consider_train_target = consider_train_target
-
-    @property
-    def sizes(self) -> tuple[int, int]:
-        return self._positive_size, self._negative_size
-
-    @property
-    def matrices(self) -> tuple[list, list]:
-        return self._positives_matrix, self._negatives_matrix
+    def __init__(self, xi):
+        self.xi = xi
+        self.forward_frequencies_pos_all = []
+        self.forward_frequencies_neg_all = []
+        self.backward_frequencies_pos_all = []
+        self.backward_frequencies_neg_all = []
 
     def fit(self, x: DataFrame, y: Series):
-        positives = x[y == 1]
-        negatives = x[y == 0]
+        self.forward_frequencies_pos_all = []
+        self.forward_frequencies_neg_all = []
+        self.backward_frequencies_pos_all = []
+        self.backward_frequencies_neg_all = []
 
-        self._positives_matrix = _calculate_matrix(positives['sequence'].values, TRI_NUCLEOTIDES_DICT)
-        self._negatives_matrix = _calculate_matrix(negatives['sequence'].values, TRI_NUCLEOTIDES_DICT)
+        D_plus = x[y == 1]['sequence'].values
+        D_minus = x[y == 0]['sequence'].values
 
-        self._positive_size = len(positives)
-        self._negative_size = len(negatives)
+        for xi in self.xi:
+            l = len(D_plus[0])
+            forward_frequencies_pos, backward_frequencies_pos = calculate_trinucleotide_frequencies(D_plus, l, xi)
+            forward_frequencies_neg, backward_frequencies_neg = calculate_trinucleotide_frequencies(D_minus, l, xi)
+
+            self.forward_frequencies_pos_all.append(forward_frequencies_pos)
+            self.backward_frequencies_pos_all.append(backward_frequencies_pos)
+            self.forward_frequencies_neg_all.append(forward_frequencies_neg)
+            self.backward_frequencies_neg_all.append(backward_frequencies_neg)
 
     def fit_transform(self, x: DataFrame, y: Series, **kwargs) -> DataFrame:
         self.fit(x, y)
         return self.transform(x)
 
     def transform(self, x: DataFrame) -> DataFrame:
-        if self._positive_size is None:
-            raise 'Call `fit` before calling `transform` because this encoding needs collective sequence information'
-
         sequences = (x['sequence'] if 'sequence' in x else x[0]).values
 
-        new_samples = []
-        for i in range(len(sequences)):
-            new_samples.append(encode(sequences[i], self.sizes, self.matrices))
+        new_sample = []
+        for seq in sequences:
+            encoded_vector = []
+            for xi in self.xi:
+                encoded_vector.extend(
+                    encode_rna_sequence(seq, self.forward_frequencies_pos_all[xi],
+                                        self.backward_frequencies_pos_all[xi],
+                                        self.forward_frequencies_neg_all[xi], self.backward_frequencies_neg_all[xi],
+                                        len(seq),
+                                        xi))
+
+            new_sample.append(encoded_vector)
 
         return DataFrame(
-            data=new_samples,
-            columns=[f'pstnpss_{i}' for i in range(len(self._positives_matrix))]
+            data=new_sample,
+            columns=[f'pstnpss_{i}' for i in range(len(new_sample[0]))]
         )

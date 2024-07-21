@@ -1,7 +1,7 @@
-from pandas import DataFrame
 from itertools import product
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -18,9 +18,12 @@ def encode(sequence: str, k: int, ps_dict: dict | None = None) -> list[float]:
             in subseq]
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
     def __init__(self, k=2):
         self.k = k
+
+    def fit(self, x: DataFrame, y: Series):
+        print('PS encoding is unsupervised and does not need to be fitted on training data')
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         ps_dict = create_ps_dict(self.k)

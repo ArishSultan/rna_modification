@@ -1,6 +1,7 @@
 import numpy as np
 from pandas import DataFrame, Series
-from sklearn.base import BaseEstimator, TransformerMixin
+
+from src.features.encoder import BaseEncoder
 
 TRI_NUCLEOTIDES_DICT = {
     'AAA': 0, 'AAC': 1, 'AAG': 2, 'AAU': 3, 'ACA': 4, 'ACC': 5, 'ACG': 6, 'ACU': 7,
@@ -49,7 +50,7 @@ def _calculate_matrix(data, order):
     return matrix
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
     def __init__(self, consider_train_target=False, consider_test_target=False):
         self._positive_size = None
         self._negative_size = None
@@ -76,8 +77,8 @@ class Encoder(BaseEstimator, TransformerMixin):
         self._positive_size = len(positives)
         self._negative_size = len(negatives)
 
-    def fit_transform(self, x: DataFrame, y: Series, **kwargs) -> DataFrame:
-        self.fit(x, y)
+    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
+        self.fit(x, kwargs['y'])
         return self.transform(x)
 
     def transform(self, x: DataFrame) -> DataFrame:

@@ -3,14 +3,14 @@ from src.experiment import Experiment
 from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 
-from src.features.encodings import pstnpss as enc
+from src.features.encodings import bi_pstp as enc
 from src.dataset import load_benchmark_dataset, Species, Modification
 from src.utils import write_reports
 
 dataset = load_benchmark_dataset(Species.human, Modification.psi)
 dataset_test = load_benchmark_dataset(Species.human, Modification.psi, True)
 
-encoder = enc.Encoder()
+encoder = enc.Encoder(k=3)
 encoded_samples = encoder.fit_transform(dataset.samples, y=dataset.targets)
 encoded_samples_test = encoder.transform(dataset_test.samples)
 

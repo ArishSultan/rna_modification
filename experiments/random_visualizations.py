@@ -97,7 +97,7 @@ for cluster in CLUSTERS:
         encoder_dir.mkdir(parents=True, exist_ok=True)
 
         _encoder = ENCODERS[encoder]
-        train_samples = _encoder.fit_transform(train_dataset.samples, y=train_dataset.targets)
+        train_samples = _encoder.fit_transform()
         test_samples = _encoder.transform(test_dataset.samples)
 
         for n_cluster in N_CLUSTERS:

@@ -1,7 +1,7 @@
-from pandas import DataFrame
 from collections import Counter
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -70,16 +70,14 @@ def _prepare_probabilities(samples):
     return r_prob, l_prob
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
     def __init__(self):
         self.pos_prob = None
         self.neg_prob = None
 
-    def fit(self, x: DataFrame, **kwargs):
-        targets = kwargs['y']
-
-        positive_samples = x[targets == 1]['sequence'].values
-        negative_samples = x[targets == 0]['sequence'].values
+    def fit(self, x: DataFrame, y: Series):
+        positive_samples = x[y == 1]['sequence'].values
+        negative_samples = x[y == 0]['sequence'].values
 
         self.pos_prob = _prepare_probabilities(positive_samples)
         self.neg_prob = _prepare_probabilities(negative_samples)

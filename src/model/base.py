@@ -18,3 +18,12 @@ class ModelFactory:
 
     def create_model(self) -> BaseModel:
         pass
+
+
+class BasicFactoryModel(ModelFactory):
+    def __init__(self, model, **kwargs):
+        super().__init__(**kwargs)
+        self._model = model
+
+    def create_model(self):
+        return self._model

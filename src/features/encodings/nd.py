@@ -1,6 +1,6 @@
-from pandas import DataFrame
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -12,7 +12,10 @@ def encode_nucleotide(sequence, index) -> float:
     return sequence[:index].count(sequence[index]) / (index + 1)
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
+    def fit(self, x: DataFrame, y: Series):
+        print('ND encoding is unsupervised and does not need to be fitted on training data')
+
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, encode, 'nd')
 

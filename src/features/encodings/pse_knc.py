@@ -1,7 +1,7 @@
-from pandas import DataFrame
-from sklearn.base import BaseEstimator, TransformerMixin
+from pandas import DataFrame, Series
 
 from . import kmer
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df, get_info_file
 
 _K_2_INDEX = {'AA': 0, 'AC': 1, 'AG': 2, 'AU': 3,
@@ -59,11 +59,14 @@ def encode(sequence: str, info: tuple, k=2, lambda0: float = 1, weight: float = 
     return encoded_seq
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
     def __init__(self, k=2, lambda0: float = 1, weight: float = 0):
         self.k = k
         self.weight = weight
         self.lambda0 = lambda0
+
+    def fit(self, x: DataFrame, y: Series):
+        print('PseKNC encoding is unsupervised and does not need to be fitted on training data')
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         info = get_info()

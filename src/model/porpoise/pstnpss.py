@@ -1,3 +1,4 @@
+from pandas import DataFrame
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from ...dataset import Species, SeqBunch
@@ -610,12 +611,8 @@ class Encoder(BaseEstimator, TransformerMixin):
     def __init__(self, species: Species):
         self._species = species
 
-    def fit_transform(self, bunch: SeqBunch, **kwargs) -> SeqBunch:
-        return SeqBunch(
-            targets=bunch.targets,
-            description=bunch.description,
-            samples=encode_df(bunch.samples, lambda seq: encode(seq, self._species), 'pstnpss'),
-        )
+    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
+        return encode_df(x, lambda seq: encode(seq, self._species), 'p_pstnpss')
 
-    def transform(self, x: SeqBunch) -> SeqBunch:
+    def transform(self, x: DataFrame) -> DataFrame:
         return self.fit_transform(x)

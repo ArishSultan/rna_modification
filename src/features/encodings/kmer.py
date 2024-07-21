@@ -1,8 +1,8 @@
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from itertools import product
 from collections import Counter
-from sklearn.base import BaseEstimator, TransformerMixin
 
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -81,11 +81,14 @@ def encode(sequence: str, k: int = 2, upto: bool = False, normalize: bool = Fals
     return result
 
 
-class Encoder(BaseEstimator, TransformerMixin):
+class Encoder(BaseEncoder):
     def __init__(self, k: int = 2, upto: bool = False, normalize: bool = False):
         self.k = k
         self.upto = upto
         self.normalize = normalize
+
+    def fit(self, x: DataFrame, y: Series):
+        print('KMER encoding is unsupervised and does not need to be fitted on training data')
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, lambda seq: encode(seq, self.k, self.upto, self.normalize), 'kmer')

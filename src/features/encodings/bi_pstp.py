@@ -1,8 +1,8 @@
 import numpy as np
 from pandas import DataFrame, Series
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from .kmer import generate_all_kmers
+from ..encoder import BaseEncoder
 from ...utils.features import encode_df
 
 
@@ -62,7 +62,7 @@ def _calculate_bi_propensity_matrices(sequences: list[str], k: int, gap: int, km
     # for i in range(len(matrix_forwards)):
     #     matrix_forwards[i] /= np.sum(matrix_forwards[i])
     #     matrix_backwards[i] /= np.sum(matrix_backwards[i])
-
+    #
     for i in range(len(matrix_forwards)):
         matrix_forwards[i] /= len(sequences)
         matrix_backwards[i] /= len(sequences)
@@ -99,8 +99,8 @@ def _encode(sequence, k: int, min_gap: int, max_gap: int, gap_matrices: dict, km
     ])
 
 
-class Encoder(BaseEstimator, TransformerMixin):
-    def __init__(self, k: int, gap: int, min_gap: int = 0):
+class Encoder(BaseEncoder):
+    def __init__(self, k: int = 3, gap: int = 0, min_gap: int = 0):
         assert 0 <= min_gap <= gap and 0 <= gap
 
         self._k = k
