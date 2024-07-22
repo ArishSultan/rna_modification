@@ -1,3 +1,5 @@
+import os
+
 from pandas import read_csv, concat
 from sklearn.model_selection import train_test_split
 
@@ -6,10 +8,13 @@ from src.utils import get_path
 from . import SeqBunch, Species, Modification
 
 
-def load_benchmark_dataset(species: Species, modification: Modification, independent: bool = False) -> SeqBunch:
+def load_benchmark_dataset(species: Species, modification: Modification, independent: bool = False) -> SeqBunch | None:
     root_dir = get_path()
     group = 'independent' if independent else 'training'
     file_path = root_dir / 'dataset' / 'benchmark' / modification.value / group / f'{species.value}.csv'
+
+    if not os.path.exists(file_path):
+        return None
 
     data = read_csv(file_path, header=None)
 
@@ -19,7 +24,8 @@ def load_benchmark_dataset(species: Species, modification: Modification, indepen
     )
 
 
-def load_dataset(species: Species, modification: Modification, filtered=None, subsample=False, seq_len: int = 0) -> SeqBunch:
+def load_dataset(species: Species, modification: Modification, filtered=None, subsample=False,
+                 seq_len: int = 0) -> SeqBunch:
     root_dir = get_path()
     file_path = root_dir / 'dataset' / 'processed' / modification.value
 

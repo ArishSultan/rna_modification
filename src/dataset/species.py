@@ -19,5 +19,5 @@ class Species(Enum):
         raise ValueError(f"Unknown species, f{value} is not supported yet.")
 
     @staticmethod
-    def all() -> tuple[Enum, Enum, Enum]:
+    def all() -> tuple['Species', 'Species', 'Species']:
         return Species.human, Species.mouse, Species.yeast

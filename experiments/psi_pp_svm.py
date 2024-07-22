@@ -2,7 +2,7 @@
 from src.model import xgboost, svm
 from src.utils import write_reports
 from src.experiment import Experiment
-from src.features.encodings import psi_umap, pstnpss
+from src.features.encodings import pstnpss
 from src.dataset import load_benchmark_dataset, Species, Modification, SeqBunch, load_dataset
 
 dataset = load_benchmark_dataset(Species.human, Modification.psi, False)
@@ -15,7 +15,7 @@ test_dataset = load_benchmark_dataset(Species.human, Modification.psi, True)
 # dataset._samples = pstnpss.Encoder().fit_transform(dataset.samples, y=dataset.targets)
 # test_dataset._samples = pstnpss.Encoder().fit_transform(test_dataset.samples, y=test_dataset.targets)
 #
-experiment = Experiment(svm.Factory(), test_dataset, dataset, psi_umap.Encoder(pstnpss.Encoder(), n_components=3), k=10)
+experiment = Experiment(svm.Factory(), test_dataset, dataset, pstnpss.Encoder(), k=10)
 
 report = experiment.run()
 

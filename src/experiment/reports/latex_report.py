@@ -120,7 +120,7 @@ def generate_roc_curve(data):
     \addplot[black, dashed, dash pattern=on 4pt off 2pt] table {
       0 0
       1 1
-    };''' % (round(data['auc'], 2), '\n'.join(entries))
+    };''' % (data['auc'].round(decimals=2), '\n'.join(entries))
     )
 
 
