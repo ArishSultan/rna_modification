@@ -1,15 +1,41 @@
 import numpy as np
 
 from sklearn.svm import SVC
+from pandas import DataFrame, Series
 from sklearn.model_selection import GridSearchCV
 
 from src.dataset import Species
 from src.experiment import ExperimentNew
-from src.features.encodings import pse_knc as encoding
-
+from src.features.encoder import BaseEncoder
+from src.features.encodings import nd, ncp, pse_knc
+from src.utils.features import encode_df
 from src.utils.literature import literature_experiment
 
-encoder = encoding.Encoder()
+
+class Encoder(BaseEncoder):
+    def fit(self, x: DataFrame, y: Series):
+        pass
+
+    def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
+        return encode_df(x, Encoder._encode, 'pse_knc')
+
+    def transform(self, x: DataFrame) -> DataFrame:
+        return self.fit_transform(x)
+
+    @staticmethod
+    def _encode(seq: str):
+        encoded = []
+        encoded1 = ncp.encode(seq)
+        encoded2 = nd.encode(seq)
+
+        for i in range(len(encoded2)):
+            encoded += encoded1[i * 3: i * 3 + 3]
+            encoded.append(encoded2[i])
+
+        return encoded
+
+
+encoder = Encoder()
 grid_search = GridSearchCV(
     cv=10,
     n_jobs=-1,
@@ -39,4 +65,4 @@ def perform_op(train_dataset, test_dataset):
     return fold_reports, mean_report, test_report
 
 
-literature_experiment('iRNA-PseU', Species.all(), perform_op)
+literature_experiment('report', Species.all(), perform_op)
