@@ -9,7 +9,7 @@ def encode(sequence: str) -> list[float]:
 
 
 def encode_nucleotide(sequence, index) -> float:
-    return sequence[:index].count(sequence[index]) / (index + 1)
+    return sequence[:index + 1].count(sequence[index]) / (index + 1)
 
 
 class Encoder(BaseEncoder):
