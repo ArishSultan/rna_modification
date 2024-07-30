@@ -97,13 +97,24 @@ def main():
 
     children = Path(get_path('literature')).glob('*')
     for child in children:
+        if child.name.startswith('*'):
+            continue
+        #     ATGGGGTTCGGTATGCGC
+        #     AAGGCTCCCCGAGACGAT
+
         if child.is_dir() and not child.name.startswith('.'):
             report_directories.append(child)
 
     for report in report_directories:
+        report_file = report / 'report.json'
+
+        if not report_file.exists():
+            print(f'{report_file} does not exist')
+            continue
+
         print(f'Generating Report {report.name}')
 
-        data = json.loads(open(report / 'report.json').read())
+        data = json.loads(open(report_file).read())
         folds_mean_roc = _generate_specie_roc(data, 'folds_mean')
         independent_roc = _generate_specie_roc(data, 'independent')
 
