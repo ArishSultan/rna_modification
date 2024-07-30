@@ -99,8 +99,6 @@ def main():
     for child in children:
         if child.name.startswith('*'):
             continue
-        #     ATGGGGTTCGGTATGCGC
-        #     AAGGCTCCCCGAGACGAT
 
         if child.is_dir() and not child.name.startswith('.'):
             report_directories.append(child)
