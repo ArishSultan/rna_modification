@@ -1,0 +1,81 @@
+\documentclass[12pt]{book}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+\usepackage{amsmath, amssymb}
+\usepackage{pgfplots}
+\usepackage{textcomp}
+\usepackage{gensymb}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage[numbers]{natbib}
+\bibliographystyle{plain}
+
+\usepackage{hyperref}
+\usepackage{csquotes}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  filecolor=blue,
+  urlcolor=blue
+}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\newcommand{\pseudo}{\ensuremath{\Psi}} % Pseudouridine symbol for RNA research
+
+\begin{document}
+
+% Title Page
+  \title{Chapter Title: RNA Modification Detection in Pseudouridine}
+  \author{Your Name}
+  \date{\today}
+
+  \maketitle
+
+% Table of Contents
+  \tableofcontents
+  \newpage
+
+% Chapter Sections
+
+  \input{sections/introduction}
+  \input{sections/methodology}
+
+
+  \chapter{Related Work}
+    \label{ch:related}
+% Related work text goes here
+
+
+    \section{Experiments}
+      \label{sec:experiments}
+% Experiments text goes here
+
+
+    \section{Results}
+      \label{sec:results}
+% Results text goes here
+
+
+  \chapter{Conclusion and Future Work}
+    \label{ch:conclusion}
+% Conclusion text goes here
+
+% Bibliography
+    \bibliography{references}
+\end{document}

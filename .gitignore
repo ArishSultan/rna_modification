@@ -166,3 +166,6 @@ dump
 
 literature/**/report.json
 literature/**/out/**
+
+writing/**/*.pdf
+writing/**/*.synctex.gz
