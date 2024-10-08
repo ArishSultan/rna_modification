@@ -1,0 +1,22 @@
+\section{Pseudouridine Detection Techniques}\label{sec:pseudouridine-detection-techniques}
+  \subsection*{Chemical Detection}
+
+    Detecting pseudouridine (\pseudo) in RNA is challenging due to its subtle structural differences from uridine.
+    Several traditional experimental techniques require specialized equipment and manual labor, making them resource-intensive.
+    These methods include:
+
+    \begin{itemize}
+      \item \textbf{High-Performance Liquid Chromatography (HPLC)}: Used for separation and identification of nucleoside modifications, including pseudouridine, but it is labor-intensive and unsuitable for large-scale studies~\cite{gehrke_quantitative_1982}.
+      \item \textbf{Mass Spectrometry (MS)}: Provides highly accurate detection but requires complex protocols and specialized equipment, limiting its scalability for high-throughput studies~\cite{de_hoffmann_mass_2011}.
+      \item \textbf{Next-Generation Sequencing-Based Methods}: Techniques such as Pseudo-seq and $\Psi$-seq use chemical derivatization to map pseudouridine across the transcriptome, but these methods are also complex and resource-intensive~\cite{carlile_pseudo-seq_2015}.
+    \end{itemize}
+
+  \subsection*{Computational Prediction}
+    Machine learning (ML)-based computational approaches offer a scalable and cost-effective alternative for pseudouridine prediction, leveraging large RNA sequence datasets to identify potential pseudouridine sites. These models utilize sequence features, secondary structures, and evolutionary conservation to make predictions. Key advantages of ML-based methods include:
+
+    \begin{itemize}
+      \item \textbf{High-Throughput Screening}: Machine learning algorithms, including deep learning (DL) models, can analyze vast amounts of RNA sequences to identify pseudouridine sites. By detecting sequence motifs and structural features commonly associated with pseudouridylation, these models can process large datasets quickly and efficiently, making them ideal for genome-wide studies~\cite{he2021pseudornaseeker}.
+      \item \textbf{Feature Extraction and Model Training}: ML models typically rely on supervised learning techniques, where labeled RNA sequences with known pseudouridine sites are used to train the model. These models learn to extract relevant features, such as sequence motifs, secondary structures, and evolutionary conservation, that are indicative of pseudouridylation. Once trained, the models can generalize to predict pseudouridine sites in previously unseen RNA sequences.
+      \item \textbf{Integration with Experimental Data}: Computational predictions complement experimental approaches by providing insights into potential pseudouridine sites before performing labor-intensive experimental validation. This integration allows researchers to narrow down candidate sites for targeted experimental studies, thereby saving resources and focusing efforts where validation is most needed~\cite{song2020identification}.
+      \item \textbf{Scalability and Flexibility}: ML-based approaches are highly scalable and can be applied to a variety of RNA datasets across different organisms and conditions. This scalability is essential for studying pseudouridylation patterns in diverse biological contexts, such as disease states or stress responses~\cite{he2021pseudornaseeker}. Moreover, these models can be continually refined as new experimental data become available, improving their predictive accuracy over time.
+    \end{itemize}
