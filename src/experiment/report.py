@@ -68,7 +68,7 @@ class Report:
     def to_dict(self) -> Dict[str, Any]:
         return {
             'scores': vars(self.scores),
-            'tables': {
+            'tabels': {
                 'confusion_matrix': self.tables.confusion_matrix.tolist(),
                 'classification_report': self.tables.classification_report,
             },
@@ -83,7 +83,7 @@ class Report:
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> 'Report':
         scores = data['scores']
-        tables = data['tables']
+        tables = data['tabels']
         visualizations = data['visualizations']
 
         return Report(

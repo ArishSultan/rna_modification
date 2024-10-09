@@ -5,7 +5,7 @@
   With the subsequent releases of RMBase v2~\cite{xuan_rmbase_2018} and RMBase v3~\cite{xuan_rmbase_2024}, the number of sequences available has expanded significantly, making it difficult to recreate the exact dataset used in 2016.
   However, the methodology employed to create the dataset remains an essential reference point for current research.
 
-  \subsection{Dataset Construction and Classification}\label{subsec:dataset-construction}
+  \subsection{Dataset Construction}\label{subsec:dataset-construction}
     The original dataset was constructed by segmenting each RNA sequence using a sliding window approach, where each window is centered on an uridine (U) residue.
     Let \( R = \{r_1, r_2, \dots, r_L\} \) represent an RNA sequence of length \( L \), where each \( r_i \) denotes a nucleotide.
     A window of size \( 2\xi + 1 \) nucleotides is defined around each uridine site \( r_j \), such that the segment is given by:
@@ -15,7 +15,7 @@
     \]
 
     Here, \( S_j \) represents the subsequence of nucleotides centered around the \( j \)-th uridine.
-    The window size \( 2\xi + 1 \) is empirically determined to provide sufficient context for the pseudouridine modification, where \( \xi = 10 \) for \textit{Homo sapiens} and \textit{Mus musculus}, and \( \xi = 15 \) for \textit{Saccharomyces cerevisiae}~\cite{chen_irna-pseu_nodate}.
+    The window size \( 2\xi + 1 \) is empirically determined to provide sufficient context for the pseudouridine modification, where \( \xi = 10 \) for \textit{Homo sapiens}, \textit{Mus musculus}, and \( \xi = 15 \) for \textit{Saccharomyces cerevisiae}~\cite{chen_irna-pseu_nodate}.
     As a result, the subsequence lengths are 21 nucleotides for\textit{Homo sapiens} and \textit{Mus musculus}, and 31 nucleotides for \textit{Saccharomyces cerevisiae}.
 
     Each subsequence \( S_j \) is classified as either a positive or negative sample, depending on whether the central uridine \( r_j \) has been experimentally validated as a pseudouridine site.
@@ -23,9 +23,8 @@
     To ensure a balanced dataset, the number of negative samples is down-sampled to match the number of positive samples~\cite{lee_downsampling_2022}.
     This reduces bias and ensures that the dataset is suitable for machine learning algorithms.
 
-    These feature vectors encapsulate both the local sequence information and the nucleotide's chemical properties, as discussed in~\cite{chen_pseudo_2015}.
-
     The summary of the benchmark dataset used for pseudouridine prediction is provided in Table~\ref{tab:dataset}.
+    Apart from this two independent sets are also created for \textit{Homo sapiens} and \textit{Mus musculus} as mentioned in~\ref{tab:independent-dataset}
 
     \begin{table}[ht]
       \centering
@@ -40,8 +39,25 @@
         \textit{Saccharomyces cerevisiae} & 314 & 314 & 628 \\
         \bottomrule
       \end{tabular}
-      \caption{Overview of the original benchmark dataset used for pseudouridine prediction, showing the number of sequences in each category and the window size \(\xi\).}
+      \caption{Overview of the benchmark dataset used for pseudouridine prediction, showing the number of sequences in each category.}
+
       \label{tab:dataset}
+    \end{table}
+
+    \begin{table}[ht]
+      \centering
+      \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        \textbf{Species} & \multicolumn{3}{c}{\textbf{Sequences}} \\
+        \cmidrule(lr){2-4}
+        & \textbf{Modified} & \textbf{Unmodified} & \textbf{Total} & \textbf{} \\
+        \midrule
+        \textit{Homo sapiens} & 100 & 100 & 200 \\
+        \textit{Saccharomyces cerevisiae} & 100 & 100 & 200 \\
+        \bottomrule
+      \end{tabular}
+      \caption{Overview of the independent dataset used for evaluating pseudouridine prediction, showing the number of sequences in each category.}
+      \label{tab:independent-dataset}
     \end{table}
 
   \subsection{Dataset Evolution}\label{subsec:dataset-evolution}

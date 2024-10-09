@@ -90,7 +90,7 @@
 
     \subsubsection{Pseudo-nucleotide Composition (PseKNC)}\label{subsubsec:pseknc}
       Pseudo-nucleotide Composition (PseKNC) encoding incorporates not only the frequency of nucleotides or nucleotide pairs but also the sequence order information.
-      It introduces a set of correlation factors, which capture the relationships between distant nucleotides along the sequence, adding an additional layer of sequence-order information to the standard nucleotide composition methods.
+      It introduces a set of correlation factors, which capture the relationships between distant nucleotides along the sequence, adding a layer of sequence-order information to the standard nucleotide composition methods.
 
       For an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the PseKNC encoding is calculated by first computing a set of correlation factors $\theta_l$ for $l$-th order correlations, where $l$ refers to the distance between nucleotides being compared. The final PseKNC encoding is a combination of the original nucleotide composition along with these correlation factors:
       \[
@@ -99,40 +99,78 @@
       where $L$ represents the highest correlation order considered.
       The exact calculation of $\theta_l$ may depend on the specific method used but generally involves computing the correlation between nucleotides $l$ positions apart in the sequence.
 
-  \subsection{Nucleotide chemical property (NCP)}\label{enc:NCP}
+  \subsection{Nucleotide chemical property (NCP)}\label{subsec:ncp}
+    Nucleotide Chemical Property (NCP) encoding represents RNA sequences by assigning a vector of three predefined chemical properties to each nucleotide (A, C, G, U). The chemical properties are simplified into binary values representing attributes such as molecular properties. This encoding allows machine learning models to utilize a simplified chemical feature representation of each nucleotide.
 
-  \subsection{Pseudo nucleotide composition (PseKNC)}\label{enc:PseKNC}
-
-  \subsection{Pseudo Dinucleotide Composition (PseDNC)}\label{enc:PseDNC}
-
-  \subsection{Position-Specific Nucleotide Propensity (PSNP)}\label{enc:PSNP}
-
-  \subsection{Position-Specific Dinucleotide Propensity (PSDP)}\label{enc:PSDP}
-
-  \subsection{Position-Specific Trinucleotide Propensity (PSTNPss)}\label{subsec:pstnpss}
-    Position-Specific Trinucleotide Propensity (PSTNPss) is an encoding scheme that calculates the difference in trinucleotide frequencies between two predefined groups (e.g., positive and negative samples). This method encodes the propensity of each trinucleotide (combinations of three nucleotides) at each position in an RNA sequence by comparing its occurrence in a positive matrix and a negative matrix of known sequences.
-
-    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the sequence is divided into overlapping trinucleotides (3-mers), such that for each position $j$ in the sequence (excluding the last two positions), the trinucleotide $T_j$ is defined as:
+    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, where $s_i \in \{A, C, G, U\}$, each nucleotide is represented by a three-dimensional binary vector encoding specific properties. For a nucleotide $s_i$, the encoding is determined as:
     \[
-      T_j = s_j s_{j+1} s_{j+2}
+      NCP(s_i) = \begin{cases}
+      [1.0, 1.0, 1.0]
+                   , & \text{if } s_i = A \\
+                   [0.0, 1.0, 0.0], & \text{if } s_i = C \\
+                   [1.0, 0.0, 0.0], & \text{if } s_i = G \\
+                   [0.0, 0.0, 1.0], & \text{if } s_i = U
+      \end{cases}
     \]
 
-    Let $P_j$ be the position-specific trinucleotide frequency matrix for the positive group and $N_j$ for the negative group. For each trinucleotide $T_j$ at position $j$, the positive frequency is given as $P_j(T_j)$, and the negative frequency is given as $N_j(T_j)$. These matrices are pre-calculated over a dataset of sequences.
-
-    The propensity encoding for trinucleotide $T_j$ at position $j$ is then computed as:
+    The final NCP encoding for the sequence $S$ is the concatenation of the vectors for each nucleotide, resulting in a vector of length $3n$:
     \[
-      PSTNPss_j(T_j) = \frac{P_j(T_j)}{|P|} - \frac{N_j(T_j)}{|N|}
-    \]
-    where $|P|$ is the total count of all trinucleotides in the positive matrix at position $j$, and $|N|$ is the total count of all trinucleotides in the negative matrix at position $j$.
-
-    The final encoding for the entire sequence $S$ is a vector of length $n - 2$, representing the propensity values for all trinucleotides across the sequence:
-    \[
-      PSTNPss(S) = [PSTNPss_1(T_1), PSTNPss_2(T_2), \dots, PSTNPss_{n-2}(T_{n-2})]
+      NCP(S) = [NCP(s_1), NCP(s_2), \dots, NCP(s_n)]
     \]
 
-    The matrices $P_j$ and $N_j$ are computed from a set of sequences in the positive and negative groups, respectively. For each position $j$, the matrix entry corresponding to trinucleotide $T_j$ is updated based on the occurrences of $T_j$ in the sequences. This is defined as:
-    \[
-      P_j(T_j) = \sum_{i=1}^{m} \mathbb{I}(S_i[j:j+3] = T_j)
-    \]
-    where $S_i$ is the $i$-th sequence in the dataset, and $\mathbb{I}$ is an indicator function that equals 1 if the trinucleotide at position $j$ matches $T_j$ and 0 otherwise.
+  \subsection{Position-Specific Nucleotide Propensity}\label{subsec:position-specific-nucleotide-propensity}
+    Position-specific propensity encodings capture how the frequency of nucleotides, dinucleotides, or trinucleotides varies at each position of the RNA sequence between two predefined groups (e.g., positive and negative samples). These methods provide insights into position-specific variations in nucleotide composition between groups. Below are the mathematical representations for nucleotide, dinucleotide, and trinucleotide propensities.
 
+    \subsubsection{Position-Specific Nucleotide Propensity (PSNP)}\label{subsubsec:PSNP}
+      Position-Specific Nucleotide Propensity (PSNP) encodes the difference in the occurrence of individual nucleotides (A, C, G, U) at each position between two groups of RNA sequences.
+      This is useful for determining how each nucleotide behaves at specific positions across different groups.
+
+      Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, let $P_j$ represent the frequency matrix for nucleotides in the positive group and $N_j$ for the negative group.
+      For each position $j$, the nucleotide propensity for nucleotide $s_j$ is calculated as:
+      \[
+        PSNP_j(s_j) = \frac{P_j(s_j)}{|P|} - \frac{N_j(s_j)}{|N|}
+      \]
+      where $P_j(s_j)$ and $N_j(s_j)$ are the counts of nucleotide $s_j$ at position $j$ in the positive and negative groups, respectively, $|P|$ and $|N|$ are the total counts of nucleotides at position $j$ in each group.
+
+      The final encoding for the sequence $S$ is a vector of length $n$, representing the propensity values for nucleotides across the sequence:
+      \[
+        PSNP(S) = [PSNP_1(s_1), PSNP_2(s_2), \dots, PSNP_n(s_n)]
+      \]
+
+    \subsubsection{Position-Specific Dinucleotide Propensity (PSDP)}\label{subsubsec:PSDP}
+      Position-Specific Dinucleotide Propensity (PSDP) encodes the difference in dinucleotide (2-mers) frequencies between two groups of sequences at each position.
+      This method captures the dinucleotide-level variations between positive and negative datasets, providing a richer level of detail than PSNP.
+
+      Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, for each position $j$, define the dinucleotide $D_j = s_j s_{j+1}$.
+      Let $P_j$ and $N_j$ be the position-specific dinucleotide frequency matrices for the positive and negative groups, respectively.
+      The propensity for dinucleotide $D_j$ at position $j$ is defined as:
+      \[
+        PSDP_j(D_j) = \frac{P_j(D_j)}{|P|} - \frac{N_j(D_j)}{|N|}
+      \]
+      where $P_j(D_j)$ and $N_j(D_j)$ are the counts of dinucleotide $D_j$ at position $j$, $|P|$ and $|N|$ are the total counts of dinucleotides at that position.
+
+      The final encoding for sequence $S$ is a vector of length $n-1$, representing the propensity values for dinucleotides across the sequence:
+      \[
+        PSDP(S) = [PSDP_1(D_1), PSDP_2(D_2), \dots, PSDP_{n-1}(D_{n-1})]
+      \]
+
+    \subsubsection{Position-Specific Trinucleotide Propensity (PSTNPss)}\label{subsubsec:pstnpss}
+      Position-Specific Trinucleotide Propensity (PSTNPss) calculates the difference in trinucleotide frequencies between two predefined groups (e.g., positive and negative samples).
+      This encoding captures the behavior of trinucleotide sequences at specific positions in RNA sequences by comparing their occurrence in positive and negative datasets.
+
+      Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the sequence is divided into overlapping trinucleotides (3-mers) such that for each position $j$ in the sequence (excluding the last two positions), the trinucleotide $T_j$ is defined as:
+      \[
+        T_j = s_j s_{j+1} s_{j+2}
+      \]
+
+      Let $P_j$ be the position-specific trinucleotide frequency matrix for the positive group, and $N_j$ for the negative group.
+      For each trinucleotide $T_j$ at position $j$, the propensity encoding is computed as:
+      \[
+        PSTNPss_j(T_j) = \frac{P_j(T_j)}{|P|} - \frac{N_j(T_j)}{|N|}
+      \]
+      where $|P|$ and $|N|$ represent the total count of all trinucleotides at position $j$ in the positive and negative groups, respectively.
+
+      The final encoding for sequence $S$ is a vector of length $n-2$, representing the propensity values for trinucleotides across the sequence:
+      \[
+        PSTNPss(S) = [PSTNPss_1(T_1), PSTNPss_2(T_2), \dots, PSTNPss_{n-2}(T_{n-2})]
+      \]
