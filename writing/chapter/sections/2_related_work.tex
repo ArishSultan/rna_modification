@@ -4,15 +4,56 @@
   Finally, we present a comparative analysis of the studies in a summary table.
 
 
-  \section{}\label{sec:}
+  \section{Past Studies}\label{sec:past-studies}
 
-    \subsection{PPUS\cite{li_ppus_2015}}\label{subsec:ppus}
-      \subsubsection*{Approach}
-        This study employed [describe encoding schemes], where [brief explanation of the encoding method].
-      \subsubsection*{Feature Selection}
-        The feature selection method used was [method name], which [brief explanation].
-      \subsubsection*{Machine Learning Algorithm}
-        The machine learning model implemented was [ML algorithm], which [brief explanation of how the algorithm was applied].
+    \subsection*{iRNA-PseU \cite{chen_irna-pseu_nodate}}\label{subsec:iRNA-PseU}
+      This study employed a feature encoding scheme based on nucleotide chemical properties and nucleotide frequency.
+      The chemical properties (e.g., purine/pyrimidine structure, amino/keto groups, and hydrogen bond strength) were encoded alongside nucleotide occurrence frequency.
+      This aimed to capture the biological relevance of nucleotide sequences for pseudouridine site prediction.
+
+      \begin{itemize}
+        \item \textbf{Feature Encoding}: NCP~\ref{enc:NCP}, PseKNC~\ref{subsubsec:pseknc}.
+        \item \textbf{Model}: SVM~\ref{model:SVM} with RBF kernel.
+      \end{itemize}
+
+    \subsection*{PseUI \cite{he_pseui_2018}}\label{subsec:PseUI}
+      This study combined various feature encoding schemes, including nucleotide composition (NC), dinucleotide composition (DC), pseudo dinucleotide composition (pseDNC), position-specific nucleotide propensity (PSNP), and position-specific dinucleotide propensity (PSDP). It employed sequential forward feature selection (SFS) to create a compact, discriminative feature set for pseudouridine site prediction.
+
+      \begin{itemize}
+        \item \textbf{Feature Encoding}: NC~\ref{subsubsec:nc}, DNC~\ref{subsubsec:dnc}, PseDNC~\ref{enc:PseDNC}, PSNP~\ref{enc:PSNP}, PSDP~\ref{enc:PSDP}.
+        \item \textbf{Feature Selection}: SFS~\ref{fs:SFS}, evaluated with MCC~\ref{subsec:mcc}.
+        \item \textbf{Model}: SVM~\ref{model:SVM}, jackknife cross-validation.
+      \end{itemize}
+
+    \subsection*{XG-PseU \cite{liu_xg-pseu_2020}}\label{subsec:XG-PseU}
+      This study used multiple feature encoding schemes, such as nucleotide composition (NC), dinucleotide composition (DNC), trinucleotide composition (TNC), nucleotide chemical properties (NCP), nucleotide density (ND), and one-hot encoding.
+      A two-step feature selection (forward selection and increment feature selection) was employed for optimal performance in pseudouridine site prediction.
+
+      \begin{itemize}
+        \item \textbf{Feature Encoding}: NC~\ref{subsubsec:nc}, DNC~\ref{subsubsec:dnc}, TNC~\ref{subsubsec:tnc}, NCP~\ref{enc:NCP}, ND~\ref{subsec:nd}, one-hot~\ref{subsec:binary}.
+        \item \textbf{Feature Selection}: Forward feature selection~\ref{fs:FFS} and IFS~\ref{fs:IFS}.
+        \item \textbf{Model}: XGBoost~\ref{model:Xgboost}, 10-fold cross-validation.
+      \end{itemize}
+
+    \subsection*{iPseU-NCP \cite{nguyen-vo_ipseu-ncp_2019}}\label{subsec:ipseu_ncp}
+      This study utilized Random Forest (RF) with nucleotide chemical property (NCP) encoding to represent the structural aspects of RNA sequences.
+      Feature importance within the Random Forest model was used for feature selection.
+
+      \begin{itemize}
+        \item \textbf{Feature Encoding}: NCP~\ref{enc:NCP}, PseKNC~\ref{subsubsec:pseknc}, CKSNAP~\ref{subsubsec:pseknc}.
+        \item \textbf{Feature Selection}: Feature importance ranking in RF
+        \item \textbf{Model}: RF~\ref{model:RF}, grid search with 5-fold cross-validation.
+      \end{itemize}
+
+    \subsection*{PseU-FKeERF \cite{chen_fuzzy_2024}}\label{subsec:PseU-FKeERF}
+      This study utilized fuzzy kernel evidence Random Forest (FKeERF) with several RNA sequence encoding schemes to identify pseudouridine sites.
+      Fuzzy logic was used to expand the feature space, and feature selection was performed through fuzzy mean clustering and Gaussian fuzzy membership.
+
+      \begin{itemize}
+        \item \textbf{Feature Encoding}: Binary~\ref{subsec:binary}, PSTNPss~\ref{subsec:pstnpss}, NCP~\ref{enc:NCP}, PseKNC~\ref{subsubsec:pseknc}.
+        \item \textbf{Feature Selection}: Fuzzy mean clustering and Gaussian fuzzy membership.
+        \item \textbf{Model}: Fuzzy C-mean~\ref{model:fuzzy-c}, Evidential Random Forest~\ref{model:ERF}, cross-validation and independent tests.
+      \end{itemize}
 
 
   \section{Comparison of Related Work}\label{sec:comparison-of-related-work}
@@ -22,9 +63,14 @@
       \centering
       \begin{tabular}{lcccc}
         \toprule
-        \textbf{Study} & \textbf{Acc} (\%) & \textbf{MCC} & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
+        \textbf{Study}                           & \textbf{Acc} (\%) & \textbf{MCC}    & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
         \midrule
-        iRNA-PseU      & 60.40             & 0.21         & 59.80            & 61.01            \\
+        iRNA-PseU\cite{chen_irna-pseu_nodate}    & 60.40             & 0.21            & 59.80            & 61.01            \\
+        PseUI\cite{he_pseui_2018}                & 64.24             & 0.2849          & 63.64            & 64.85            \\
+        iPseU-CNN\cite{tahir_ipseu-cnn_nodate}   & 66.68             & 0.34            & 68.78            & 65.00            \\
+        XG-PseU\cite{liu_xg-pseu_2020}           & 66.05             & 0.32            & 68.65            & 63.45            \\
+        iPseU-NCP\cite{nguyen-vo_ipseu-ncp_2019} & 62.92             & 0.24            & 65.05            & 58.79            \\
+        FKeERF\cite{chen_fuzzy_2024}             & 78.08 (91.99)     & 0.5644 (0.8504) & 78.66 (94.97)    & 77.62 (90.11)    \\
         \bottomrule
       \end{tabular}
       \caption{Comparison of all Past studies on Homo sapiens dataset}
@@ -35,9 +81,14 @@
       \centering
       \begin{tabular}{lcccc}
         \toprule
-        \textbf{Study} & \textbf{Acc} (\%) & \textbf{MCC} & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
+        \textbf{Study}                           & \textbf{Acc} (\%) & \textbf{MCC} & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
         \midrule
-        iRNA-PseU      & 69.07             & 0.38         & 64.83            & 73.31            \\
+        iRNA-PseU\cite{chen_irna-pseu_nodate}    & 69.07             & 0.38         & 64.83            & 73.31            \\
+        PseUI\cite{he_pseui_2018}                & 70.44             & 0.4103       & 66.31            & 74.58            \\
+        iPseU-CNN\cite{tahir_ipseu-cnn_nodate}   & 71.81             & 0.44         & 69.11            & 74.79            \\
+        XG-PseU\cite{liu_xg-pseu_2020}           & 71.10             & 0.43         & 76.30            & 65.92            \\
+        iPseU-NCP\cite{nguyen-vo_ipseu-ncp_2019} & 71.82             & 0.44         & 76.27            & 67.37            \\
+        FKeERF\cite{chen_fuzzy_2024}             & 77.87             & 0.5571       & 77.82            & 77.85            \\
         \bottomrule
       \end{tabular}
       \caption{Comparison of all Past studies on Mus musculus dataset}
@@ -48,15 +99,16 @@
       \centering
       \begin{tabular}{lcccc}
         \toprule
-        \textbf{Study} & \textbf{Acc} (\%) & \textbf{MCC} & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
+        \textbf{Study}                           & \textbf{Acc} (\%) & \textbf{MCC}    & \textbf{Sp} (\%) & \textbf{Sn} (\%) \\
         \midrule
-        iRNA-PseU      & 64.49             & 0.29         & 64.33            & 64.65            \\
+        iRNA-PseU\cite{chen_irna-pseu_nodate}    & 64.49             & 0.29            & 64.33            & 64.65            \\
+        PseUI\cite{he_pseui_2018}                & 65.92             & 0.3185          & 66.88            & 64.97            \\
+        iPseU-CNN\cite{tahir_ipseu-cnn_nodate}   & 68.15             & 0.37            & 70.45            & 66.36            \\
+        XG-PseU\cite{liu_xg-pseu_2020}           & 73.42             & 0.47            & 69.48            & 77.35            \\
+        iPseU-NCP\cite{nguyen-vo_ipseu-ncp_2019} & 69.59             & 0.40            & 62.10            & 77.07            \\
+        FKeERF\cite{chen_fuzzy_2024}             & 87.73 (94.5)      & 0.7589 (0.8898) & 89.98 (96.08)    & 86.08 (93.29)    \\
         \bottomrule
       \end{tabular}
       \caption{Comparison of all Past studies on Saccharomyces cerevisiae dataset}
       \label{tab:yeast_comp_table}
     \end{table}
-
-
-  \section{Conclusion}
-    In conclusion, this chapter provided a detailed review of the related studies and their methodologies for predicting pseudouridine sites in RNA sequences. The comparison table highlights the similarities and differences between the approaches, offering insights into the performance of various techniques in this field.

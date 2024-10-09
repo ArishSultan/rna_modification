@@ -489,26 +489,6 @@ Conclusion: In this study, we proposed a new predictor, PseUI, to detect Ψ site
 	file = {PDF:/Users/arish/Zotero/storage/GD3LNM6K/Mostavi et al. - 2018 - Deep-2'-O-Me Predicting 2'-O-methylation sites by Convolutional Neural Networks.pdf:application/pdf},
 }
 
-@article{he_characterizing_2021,
-	title = {Characterizing {RNA} {Pseudouridylation} by {Convolutional} {Neural} {Networks}},
-	volume = {19},
-	copyright = {https://creativecommons.org/licenses/by/4.0/},
-	issn = {1672-0229, 2210-3244},
-	url = {https://academic.oup.com/gpb/article/19/5/815/7230411},
-	doi = {10.1016/j.gpb.2019.11.015},
-	abstract = {Abstract
-            Pseudouridine (Ψ) is the most prevalent post-transcriptional RNA modification and is widespread in small cellular RNAs and mRNAs. However, the functions, mechanisms, and precise distribution of Ψs (especially in mRNAs) still remain largely unclear. The landscape of Ψs across the transcriptome has not yet been fully delineated. Here, we present a highly effective model based on a convolutional neural network (CNN), called PseudoUridyLation Site Estimator (PULSE), to analyze large-scale profiling data of Ψ sites and characterize the contextual sequence features of pseudouridylation. PULSE, consisting of two alternatively-stacked convolution and pooling layers followed by a fully-connected neural network, can automatically learn the hidden patterns of pseudouridylation from the local sequence information. Extensive validation tests demonstrated that PULSE can outperform other state-of-the-art prediction methods and achieve high prediction accuracy, thus enabling us to further characterize the transcriptome-wide landscape of Ψ sites. We further showed that the prediction results derived from PULSE can provide novel insights into understanding the functional roles of pseudouridylation, such as the regulations of RNA secondary structure, codon usage, translation, and RNA stability, and the connection to single nucleotide variants. The source code and final model for PULSE are available at https://github.com/mlcb-thu/PULSE.},
-	language = {en},
-	number = {5},
-	urldate = {2024-10-06},
-	journal = {Genomics, Proteomics \& Bioinformatics},
-	author = {He, Xuan and Zhang, Sai and Zhang, Yanqing and Lei, Zhixin and Jiang, Tao and Zeng, Jianyang},
-	month = oct,
-	year = {2021},
-	pages = {815--833},
-	file = {PDF:/Users/arish/Zotero/storage/7H2CPH5D/He et al. - 2021 - Characterizing RNA Pseudouridylation by Convolutional Neural Networks.pdf:application/pdf},
-}
-
 @article{chen_irna-ai_2017,
 	title = {{iRNA}-{AI}: identifying the adenosine to inosine editing sites in {RNA} sequences},
 	volume = {8},
@@ -1037,4 +1017,235 @@ Conclusion: In this study, we proposed a new predictor, PseUI, to detect Ψ site
 	doi = {10.1016/bs.mie.2015.03.011},
 	pages = {219--245},
 	file = {PubMed Central Full Text PDF:/Users/arish/Zotero/storage/X2LPSEZE/Carlile et al. - 2015 - Pseudo-Seq.pdf:application/pdf},
+}
+
+@article{he_characterizing_2021,
+	title = {Characterizing {RNA} {Pseudouridylation} by {Convolutional} {Neural} {Networks}},
+	volume = {19},
+	copyright = {https://creativecommons.org/licenses/by/4.0/},
+	issn = {1672-0229, 2210-3244},
+	url = {https://academic.oup.com/gpb/article/19/5/815/7230411},
+	doi = {10.1016/j.gpb.2019.11.015},
+	abstract = {Abstract
+            Pseudouridine (Ψ) is the most prevalent post-transcriptional RNA modification and is widespread in small cellular RNAs and mRNAs. However, the functions, mechanisms, and precise distribution of Ψs (especially in mRNAs) still remain largely unclear. The landscape of Ψs across the transcriptome has not yet been fully delineated. Here, we present a highly effective model based on a convolutional neural network (CNN), called PseudoUridyLation Site Estimator (PULSE), to analyze large-scale profiling data of Ψ sites and characterize the contextual sequence features of pseudouridylation. PULSE, consisting of two alternatively-stacked convolution and pooling layers followed by a fully-connected neural network, can automatically learn the hidden patterns of pseudouridylation from the local sequence information. Extensive validation tests demonstrated that PULSE can outperform other state-of-the-art prediction methods and achieve high prediction accuracy, thus enabling us to further characterize the transcriptome-wide landscape of Ψ sites. We further showed that the prediction results derived from PULSE can provide novel insights into understanding the functional roles of pseudouridylation, such as the regulations of RNA secondary structure, codon usage, translation, and RNA stability, and the connection to single nucleotide variants. The source code and final model for PULSE are available at https://github.com/mlcb-thu/PULSE.},
+	language = {en},
+	number = {5},
+	urldate = {2024-10-08},
+	journal = {Genomics, Proteomics \& Bioinformatics},
+	author = {He, Xuan and Zhang, Sai and Zhang, Yanqing and Lei, Zhixin and Jiang, Tao and Zeng, Jianyang},
+	month = oct,
+	year = {2021},
+	pages = {815--833},
+	file = {PDF:/Users/arish/Zotero/storage/I2SU67R5/He et al. - 2021 - Characterizing RNA Pseudouridylation by Convolutional Neural Networks.pdf:application/pdf},
+}
+
+@article{chou_using_2005,
+	title = {Using amphiphilic pseudo amino acid composition to predict enzyme subfamily classes},
+	volume = {21},
+	issn = {1367-4811, 1367-4803},
+	url = {https://academic.oup.com/bioinformatics/article/21/1/10/212492},
+	doi = {10.1093/bioinformatics/bth466},
+	abstract = {Abstract
+            Motivation: With protein sequences entering into databanks at an explosive pace, the early determination of the family or subfamily class for a newly found enzyme molecule becomes important because this is directly related to the detailed information about which specific target it acts on, as well as to its catalytic process and biological function. Unfortunately, it is both time-consuming and costly to do so by experiments alone. In a previous study, the covariant-discriminant algorithm was introduced to identify the 16 subfamily classes of oxidoreductases. Although the results were quite encouraging, the entire prediction process was based on the amino acid composition alone without including any sequence-order information. Therefore, it is worthy of further investigation.
+            Results: To incorporate the sequence-order effects into the predictor, the ‘amphiphilic pseudo amino acid composition’ is introduced to represent the statistical sample of a protein. The novel representation contains 20 + 2λ discrete numbers: the first 20 numbers are the components of the conventional amino acid composition; the next 2λ numbers are a set of correlation factors that reflect different hydrophobicity and hydrophilicity distribution patterns along a protein chain. Based on such a concept and formulation scheme, a new predictor is developed. It is shown by the self-consistency test, jackknife test and independent dataset tests that the success rates obtained by the new predictor are all significantly higher than those by the previous predictors. The significant enhancement in success rates also implies that the distribution of hydrophobicity and hydrophilicity of the amino acid residues along a protein chain plays a very important role to its structure and function.
+            Contact:  kchou@san.rr.com},
+	language = {en},
+	number = {1},
+	urldate = {2024-10-09},
+	journal = {Bioinformatics},
+	author = {Chou, Kuo-Chen},
+	month = jan,
+	year = {2005},
+	pages = {10--19},
+	file = {Full Text:/Users/arish/Zotero/storage/3NSXILQU/Chou - 2005 - Using amphiphilic pseudo amino acid composition to predict enzyme subfamily classes.pdf:application/pdf},
+}
+
+@article{baldi_assessing_2000,
+	title = {Assessing the accuracy of prediction algorithms for classification: an overview},
+	volume = {16},
+	issn = {1367-4811, 1367-4803},
+	shorttitle = {Assessing the accuracy of prediction algorithms for classification},
+	url = {https://academic.oup.com/bioinformatics/article/16/5/412/192336},
+	doi = {10.1093/bioinformatics/16.5.412},
+	abstract = {Abstract
+            4 Also at the Department of Biological Sciences, University of California, Irvine, USA, to whom all correspondence should be addressed.
+            We provide a unified overview of methods that currently are widely used to assess the accuracy of prediction algorithms, from raw percentages, quadratic error measures and other distances, and correlation coefficients, and to information theoretic measures such as relative entropy and mutual information. We briefly discuss the advantages and disadvantages of each approach. For classification tasks, we derive new learning algorithms for the design of prediction systems by directly optimising the correlation coefficient. We observe and prove several results relating sensitivity and specificity of optimal systems. While the principles are general, we illustrate the applicability on specific problems such as protein secondary structure and signal peptide prediction.
+            Contact: pfbaldi@ics.uci.edu},
+	language = {en},
+	number = {5},
+	urldate = {2024-10-09},
+	journal = {Bioinformatics},
+	author = {Baldi, Pierre and Brunak, Søren and Chauvin, Yves and Andersen, Claus A. F. and Nielsen, Henrik},
+	month = may,
+	year = {2000},
+	pages = {412--424},
+}
+
+@article{powers_evaluation_2020,
+	title = {Evaluation: from precision, recall and {F}-measure to {ROC}, informedness, markedness and correlation},
+	copyright = {arXiv.org perpetual, non-exclusive license},
+	shorttitle = {Evaluation},
+	url = {https://arxiv.org/abs/2010.16061},
+	doi = {10.48550/ARXIV.2010.16061},
+	abstract = {Commonly used evaluation measures including Recall, Precision, F-Measure and Rand Accuracy are biased and should not be used without clear understanding of the biases, and corresponding identification of chance or base case levels of the statistic. Using these measures a system that performs worse in the objective sense of Informedness, can appear to perform better under any of these commonly used measures. We discuss several concepts and measures that reflect the probability that prediction is informed versus chance. Informedness and introduce Markedness as a dual measure for the probability that prediction is marked versus chance. Finally we demonstrate elegant connections between the concepts of Informedness, Markedness, Correlation and Significance as well as their intuitive relationships with Recall and Precision, and outline the extension from the dichotomous case to the general multi-class case.},
+	urldate = {2024-10-09},
+	author = {Powers, David M. W.},
+	year = {2020},
+	note = {Publisher: arXiv
+Version Number: 1},
+	keywords = {FOS: Computer and information sciences, Machine Learning (cs.LG), Machine Learning (stat.ML), Methodology (stat.ME)},
+	annote = {Other
+27 pages, 7 figures. Updated and fixed egregious formatting errors (including a table overlapping text) that were introduced by the publisher. This open access journal appears to have been discontinued. arXiv admin note: text overlap with arXiv:1504.00854},
+}
+
+@article{stockert_pseudouridine_2021,
+	title = {Pseudouridine as a novel biomarker in prostate cancer},
+	volume = {39},
+	issn = {10781439},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1078143920302969},
+	doi = {10.1016/j.urolonc.2020.06.026},
+	language = {en},
+	number = {1},
+	urldate = {2024-10-09},
+	journal = {Urologic Oncology: Seminars and Original Investigations},
+	author = {Stockert, Jennifer A. and Weil, Rachel and Yadav, Kamlesh K. and Kyprianou, Natasha and Tewari, Ashutosh K.},
+	month = jan,
+	year = {2021},
+	pages = {63--71},
+	file = {PubMed Central Full Text PDF:/Users/arish/Zotero/storage/ZG3WSQN4/Stockert et al. - 2021 - Pseudouridine as a novel biomarker in prostate cancer.pdf:application/pdf},
+}
+
+@article{giambruno_unveiling_2023,
+	title = {Unveiling the role of {PUS7}-mediated pseudouridylation in host protein interactions specific for the {SARS}-{CoV}-2 {RNA} genome},
+	volume = {34},
+	issn = {21622531},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S2162253123002706},
+	doi = {10.1016/j.omtn.2023.102052},
+	language = {en},
+	urldate = {2024-10-09},
+	journal = {Molecular Therapy - Nucleic Acids},
+	author = {Giambruno, Roberto and Zacco, Elsa and Ugolini, Camilla and Vandelli, Andrea and Mulroney, Logan and D’Onghia, Manfredi and Giuliani, Bianca and Criscuolo, Elena and Castelli, Matteo and Clementi, Nicola and Clementi, Massimo and Mancini, Nicasio and Bonaldi, Tiziana and Gustincich, Stefano and Leonardi, Tommaso and Tartaglia, Gian Gaetano and Nicassio, Francesco},
+	month = dec,
+	year = {2023},
+	pages = {102052},
+	file = {Full Text:/Users/arish/Zotero/storage/JPLKGWZL/Giambruno et al. - 2023 - Unveiling the role of PUS7-mediated pseudouridylation in host protein interactions specific for the.pdf:application/pdf},
+}
+
+@article{garus_dyskerin_2021,
+	title = {Dyskerin: an essential pseudouridine synthase with multifaceted roles in ribosome biogenesis, splicing, and telomere maintenance},
+	volume = {27},
+	issn = {1355-8382, 1469-9001},
+	shorttitle = {Dyskerin},
+	url = {http://rnajournal.cshlp.org/lookup/doi/10.1261/rna.078953.121},
+	doi = {10.1261/rna.078953.121},
+	abstract = {Dyskerin and its homologs are ancient and conserved enzymes that catalyze the most common post-transcriptional modification found in cells, pseudouridylation. The resulting pseudouridines provide stability to RNA molecules and regulate ribosome biogenesis and splicing events. Dyskerin does not act independently—it is the core component of a protein heterotetramer, which associates with RNAs that contain the H/ACA motif. The variety of H/ACA RNAs that guide the function of this ribonucleoprotein (RNP) complex highlights the diversity of cellular processes in which dyskerin participates. When associated with small nucleolar (sno) RNAs, it regulates ribosomal (r) RNAs and ribosome biogenesis. By interacting with small Cajal body (sca) RNAs, it targets small nuclear (sn) RNAs to regulate pre-mRNA splicing. As a component of the telomerase holoenzyme, dyskerin binds to the telomerase RNA to modulate telomere maintenance. In a disease context, dyskerin malfunction can result in multiple detrimental phenotypes. Mutations in
+              DKC1
+              , the gene that encodes dyskerin, cause the premature aging syndrome X-linked dyskeratosis congenita (X-DC), a still incurable disorder that typically leads to bone marrow failure. In this review, we present the classical and most recent findings on this essential protein, discussing the evolutionary, structural, and functional aspects of dyskerin and the H/ACA RNP. The latest research underscores the role that dyskerin plays in the regulation of gene expression, translation efficiency, and telomere maintenance, along with the impacts that defective dyskerin has on aging, cell proliferation, haematopoietic potential, and cancer.},
+	language = {en},
+	number = {12},
+	urldate = {2024-10-09},
+	journal = {RNA},
+	author = {Garus, Alexandre and Autexier, Chantal},
+	month = dec,
+	year = {2021},
+	pages = {1441--1458},
+	file = {Full Text:/Users/arish/Zotero/storage/FFR9VGSK/Garus and Autexier - 2021 - Dyskerin an essential pseudouridine synthase with multifaceted roles in ribosome biogenesis, splici.pdf:application/pdf},
+}
+
+@article{libbrecht_machine_2015,
+	title = {Machine learning applications in genetics and genomics},
+	volume = {16},
+	issn = {1471-0056, 1471-0064},
+	url = {https://www.nature.com/articles/nrg3920},
+	doi = {10.1038/nrg3920},
+	language = {en},
+	number = {6},
+	urldate = {2024-10-09},
+	journal = {Nat Rev Genet},
+	author = {Libbrecht, Maxwell W. and Noble, William Stafford},
+	month = jun,
+	year = {2015},
+	pages = {321--332},
+	file = {Accepted Version:/Users/arish/Zotero/storage/J569C8R8/Libbrecht and Noble - 2015 - Machine learning applications in genetics and genomics.pdf:application/pdf},
+}
+
+@article{chicco_machine_2020,
+	title = {Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone},
+	volume = {20},
+	issn = {1472-6947},
+	url = {https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-020-1023-5},
+	doi = {10.1186/s12911-020-1023-5},
+	abstract = {Abstract
+            
+              Background
+              Cardiovascular diseases kill approximately 17 million people globally every year, and they mainly exhibit as myocardial infarctions and heart failures. Heart failure (HF) occurs when the heart cannot pump enough blood to meet the needs of the body.Available electronic medical records of patients quantify symptoms, body features, and clinical laboratory test values, which can be used to perform biostatistics analysis aimed at highlighting patterns and correlations otherwise undetectable by medical doctors. Machine learning, in particular, can predict patients’ survival from their data and can individuate the most important features among those included in their medical records.
+            
+            
+              Methods
+              In this paper, we analyze a dataset of 299 patients with heart failure collected in 2015. We apply several machine learning classifiers to both predict the patients survival, and rank the features corresponding to the most important risk factors. We also perform an alternative feature ranking analysis by employing traditional biostatistics tests, and compare these results with those provided by the machine learning algorithms. Since both feature ranking approaches clearly identify serum creatinine and ejection fraction as the two most relevant features, we then build the machine learning survival prediction models on these two factors alone.
+            
+            
+              Results
+              Our results of these two-feature models show not only that serum creatinine and ejection fraction are sufficient to predict survival of heart failure patients from medical records, but also that using these two features alone can lead to more accurate predictions than using the original dataset features in its entirety. We also carry out an analysis including the follow-up month of each patient: even in this case, serum creatinine and ejection fraction are the most predictive clinical features of the dataset, and are sufficient to predict patients’ survival.
+            
+            
+              Conclusions
+              This discovery has the potential to impact on clinical practice, becoming a new supporting tool for physicians when predicting if a heart failure patient will survive or not. Indeed, medical doctors aiming at understanding if a patient will survive after heart failure may focus mainly on serum creatinine and ejection fraction.},
+	language = {en},
+	number = {1},
+	urldate = {2024-10-09},
+	journal = {BMC Med Inform Decis Mak},
+	author = {Chicco, Davide and Jurman, Giuseppe},
+	month = dec,
+	year = {2020},
+	pages = {16},
+	file = {Full Text:/Users/arish/Zotero/storage/TF86M5TB/Chicco and Jurman - 2020 - Machine learning can predict survival of patients with heart failure from serum creatinine and eject.pdf:application/pdf},
+}
+
+@article{larranaga_machine_2006,
+	title = {Machine learning in bioinformatics},
+	volume = {7},
+	issn = {1467-5463},
+	url = {https://academic.oup.com/bib/article/7/1/86/264025},
+	doi = {10.1093/bib/bbk007},
+	language = {en},
+	number = {1},
+	urldate = {2024-10-09},
+	journal = {Briefings in Bioinformatics},
+	author = {Larrañaga, Pedro and Calvo, Borja and Santana, Roberto and Bielza, Concha and Galdiano, Josu and Inza, Iñaki and Lozano, José A. and Armañanzas, Rubén and Santafé, Guzmán and Pérez, Aritz and Robles, Victor},
+	month = mar,
+	year = {2006},
+	pages = {86--112},
+	file = {Full Text:/Users/arish/Zotero/storage/JCA48SY8/Larrañaga et al. - 2006 - Machine learning in bioinformatics.pdf:application/pdf},
+}
+
+@article{min_deep_2016,
+	title = {Deep learning in bioinformatics},
+	issn = {1467-5463, 1477-4054},
+	url = {https://academic.oup.com/bib/article-lookup/doi/10.1093/bib/bbw068},
+	doi = {10.1093/bib/bbw068},
+	language = {en},
+	urldate = {2024-10-09},
+	journal = {Brief Bioinform},
+	author = {Min, Seonwoo and Lee, Byunghan and Yoon, Sungroh},
+	month = jul,
+	year = {2016},
+	pages = {bbw068},
+	file = {Submitted Version:/Users/arish/Zotero/storage/8VSYFZPE/Min et al. - 2016 - Deep learning in bioinformatics.pdf:application/pdf},
+}
+
+@article{esteva_guide_2019,
+	title = {A guide to deep learning in healthcare},
+	volume = {25},
+	issn = {1078-8956, 1546-170X},
+	url = {https://www.nature.com/articles/s41591-018-0316-z},
+	doi = {10.1038/s41591-018-0316-z},
+	language = {en},
+	number = {1},
+	urldate = {2024-10-09},
+	journal = {Nat Med},
+	author = {Esteva, Andre and Robicquet, Alexandre and Ramsundar, Bharath and Kuleshov, Volodymyr and DePristo, Mark and Chou, Katherine and Cui, Claire and Corrado, Greg and Thrun, Sebastian and Dean, Jeff},
+	month = jan,
+	year = {2019},
+	pages = {24--29},
 }

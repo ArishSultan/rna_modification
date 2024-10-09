@@ -1,0 +1,75 @@
+\section{Evaluation Metrics}\label{sec:evaluation-metrics}
+
+  In this study, we evaluate the performance of our predictive models using four key metrics: Accuracy, Sensitivity (Recall), Specificity, and Matthews Correlation Coefficient (MCC). These metrics provide a comprehensive understanding of how well the model performs, especially in handling imbalanced datasets.
+  Below, we describe each metric, its mathematical formulation, and its importance.
+
+  \subsection{Accuracy}\label{subsec:accuracy}
+    It measures the proportion of correctly classified samples among the total samples.
+    It provides an overall assessment of the model's performance but may be misleading when the dataset is imbalanced.
+
+    \begin{equation}
+      \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}\label{eq:accuracy}
+    \end{equation}
+
+    Where:
+    \begin{itemize}
+      \item $TP$ = True Positives
+      \item $TN$ = True Negatives
+      \item $FP$ = False Positives
+      \item $FN$ = False Negatives
+    \end{itemize}
+
+    Although accuracy is a simple and intuitive metric, it may not provide meaningful insights if the dataset has a skewed class distribution.
+    For example, in datasets with a large number of negative samples, a model that predicts all samples as negative may have high accuracy but would fail to identify positive samples.
+
+  \subsection{Sensitivity (Recall)}\label{subsec:sensitivity-(recall)}
+    It is also known as \textbf{recall} or true positive rate, is the proportion of true positive samples correctly identified by the model.
+    This metric is crucial when the cost of missing positive samples is high.
+
+    \begin{equation}
+      \text{Sensitivity} = \frac{TP}{TP + FN}\label{eq:sensitivity}
+    \end{equation}
+
+    High sensitivity indicates that the model successfully identifies most of the positive samples, making it particularly important in medical diagnosis and bioinformatics applications where false negatives can have serious consequences~\cite{powers_evaluation_2020}.
+
+  \subsection{Specificity}\label{subsec:specificity}
+    Specificity, or true negative rate, measures the proportion of negative samples correctly identified by the model.
+    This metric is important when it is critical to avoid false positives.
+
+    \begin{equation}
+      \text{Specificity} = \frac{TN}{TN + FP}\label{eq:specificity}
+    \end{equation}
+
+    High specificity is crucial in scenarios where false positives could lead to unnecessary interventions or treatments.
+    In combination with sensitivity, specificity provides a balanced view of the model's performance.
+
+  \subsection{Matthews Correlation Coefficient (MCC)}\label{subsec:mcc}
+    It is a more informative metric than accuracy in imbalanced datasets.
+    It takes into account all four confusion matrix categories (TP, TN, FP, FN) and provides a correlation coefficient between the actual and predicted classes.
+
+    \begin{equation}
+      \text{MCC} = \frac{(TP \times TN) - (FP \times FN)}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}\label{eq:mcc}
+    \end{equation}
+
+    MCC values range from -1 to +1, where +1 indicates perfect prediction, 0 means random prediction, and -1 signifies total disagreement between prediction and observation~\cite{baldi_assessing_2000}.
+    MCC is particularly useful for datasets with imbalanced classes, as it accounts for both false positives and false negatives.
+
+
+\section{Evaluation Methods}\label{sec:evaluation-methods}
+  To assess the model's performance, we employed both the train-test split and k-fold cross-validation methods, depending on the dataset.
+  These approaches ensure robust evaluation, accounting for variability across the datasets while allowing comprehensive performance analysis.
+
+  \subsection{Train-Test Split}\label{subsec:train-test-split}
+    It is a fundamental evaluation method where the data is divided into two subsets: one for training the model and the other for testing its performance.
+    This method provides a simple and effective way to evaluate the model's generalization capacity.
+    However, its major drawback is that the performance may vary depending on how the data is split, which can introduce bias if not handled carefully~\cite{chou_remarks_2011, chou_using_2005}.
+
+    In our scenario we do not need to perform a split since we already have independent datasets for two species namely \textbf{H\_200} and \textbf{S\_200}, both datasets are fully balanced and have 200 samples (half are modified and vice versa).
+    We do not need to explicity split that the \textbf{H\_990} and \textbf{S\_628}, since the dataset is too small and the split randomness will cause the results to change drastically.
+
+  \subsection{K-Fold Cross Validation}\label{subsec:k-fold-cross-validation}
+    It is widely used when data is limited, as it ensures every data point is used for both training and testing.
+    This technique reduces variance by averaging multiple splits, making it more reliable than a simple train-test split, especially for smaller datasets~\cite{chou_signal-cf_2007}.
+    K-fold cross-validation also mitigates overfitting by providing a more accurate estimate of how the model will generalize to new data.
+
+    In this study we have used K-Fold for all the datasets and mainly for \textbf{M\_944} since there is no independent set available for this dataset

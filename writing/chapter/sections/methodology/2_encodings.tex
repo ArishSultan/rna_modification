@@ -1,0 +1,138 @@
+\section{RNA Encodings}\label{sec:encodings}
+
+  \subsection{One-Hot Encoding}\label{subsec:binary}
+    One-hot encoding is a straightforward method that assigns each nucleotide a unique binary vector of length four, representing the four possible nucleotides.
+    The mapping is defined as:
+
+    \[
+      A \rightarrow [1, 0, 0, 0], \quad
+      C \rightarrow [0, 1, 0, 0], \quad
+      G \rightarrow [0, 0, 1, 0], \quad
+      U \rightarrow [0, 0, 0, 1]
+    \]
+    Given a sequence $S = \{s_1, s_2, \dots, s_n\}$, where each $s_i$ is a nucleotide, the one-hot encoded matrix is represented as:
+    \[
+      O(S) = \begin{bmatrix}
+               1 & 0 & 0 & 0 & \dots \\
+               0 & 1 & 0 & 0 & \dots \\
+               0 & 0 & 1 & 0 & \dots \\
+               0 & 0 & 0 & 1 & \dots \\
+      \end{bmatrix}_{n \times 4}
+    \]
+    This matrix has $n$ rows, corresponding to the number of nucleotides in the sequence, and 4 columns, representing the four possible nucleotides.
+
+    In many machine learning applications, the 2D matrix is flattened into a 1D vector of length $4n$:
+    \[
+      O_{flat}(S) = [1, 0, 0, 0, 0, 1, 0, 0, \dots]
+    \]
+    This flattened vector is particularly useful in traditional machine learning algorithms that expect fixed-length input vectors.
+    In contrast, deep learning models such as convolutional neural networks (CNNs) often use the 2D matrix format to capture spatial dependencies within the sequence.
+
+  \subsection{Nucleotide Density (ND)}\label{subsec:nd}
+    Nucleotide Density (ND) encoding is a numerical representation that calculates the relative frequency of each nucleotide within a fixed-size window along the RNA sequence.
+    This method captures local nucleotide composition and is particularly useful for understanding the nucleotide distribution in specific regions of RNA sequences.
+
+    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, where $s_i \in \{A, C, G, U\}$, the nucleotide density at position $i$ for nucleotide $X \in \{A, C, G, U\}$ is defined as the proportion of $X$ in the subsequence $S[1:i]$ (i.e., from the first nucleotide up to $s_i$). This can be expressed mathematically as:
+    \[
+      ND_X(i) = \frac{\sum_{j=1}^{i} \mathbb{I}(s_j = X)}{i}
+    \]
+    where $\mathbb{I}(s_j = X)$ is an indicator function that equals 1 if $s_j = X$ and 0 otherwise.
+    The function calculates the cumulative frequency of nucleotide $X$ up to position $i$, divided by the index $i$.
+
+    The final nucleotide density encoding for the entire sequence $S$ is a vector of length $n$:
+    \[
+      ND(S) = [ND_{s_1}(1), ND_{s_2}(2), \dots, ND_{s_n}(n)]
+    \]
+    where $ND_{s_i}(i)$ is the density of nucleotide $s_i$ at position $i$.
+
+  \subsection{Nucleotide Composition Encoding}\label{subsec:nucleotide-composition-encoding}
+    Nucleotide composition encodings are used to capture the frequency of occurrence of nucleotides within RNA sequences.
+    These encodings can be applied to individual sequences, providing a representation of the nucleotide content within each sequence, or they can be applied to a list of sequences to give an aggregated view.
+    This technique helps to preserve the compositional information of RNA sequences, which can then be used for various downstream tasks, such as machine learning models in RNA modification detection.
+
+    \subsubsection{Nucleotide Composition (NC)}\label{subsubsec:nc}
+      Nucleotide Composition (NC) encoding calculates the overall frequency of each nucleotide (A, C, G, U) within a single RNA sequence.
+      This encoding provides a holistic view of the nucleotide makeup by counting the occurrences of each nucleotide and dividing by the total length of the sequence.
+
+      Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, where each $s_i \in \{A, C, G, U\}$, the nucleotide composition for each nucleotide $X \in \{A, C, G, U\}$ is defined as:
+      \[
+        NC_X = \frac{\sum_{i=1}^{n} \mathbb{I}(s_i = X)}{n}
+      \]
+      where $\mathbb{I}(s_i = X)$ is an indicator function that equals 1 if $s_i = X$ and 0 otherwise.
+      This formula counts the occurrences of nucleotide $X$ in the sequence and divides it by the total number of nucleotides $n$.
+
+      The final NC encoding is a 4-dimensional vector:
+      \[
+        NC(S) = [NC_A, NC_C, NC_G, NC_U]
+      \]
+
+    \subsubsection{Dinucleotide Composition (DNC)}\label{subsubsec:dnc}
+      Dinucleotide Composition (DNC) encoding captures the frequency of consecutive pairs of nucleotides in the sequence.
+      Each pair of nucleotides from $\{A, C, G, U\}$ is counted, giving a total of 16 possible dinucleotide combinations (AA, AC, AG, AU \dots, UU).
+
+      Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the dinucleotide composition for each dinucleotide pair $XY$ is calculated as:
+      \[
+        DNC_{XY} = \frac{\sum_{i=1}^{n-1} \mathbb{I}(s_i = X \text{ and } s_{i+1} = Y)}{n-1}
+      \]
+      where $X, Y \in \{A, C, G, U\}$.
+      The final DNC encoding is a 16-dimensional vector representing the frequency of each dinucleotide pair.
+
+    \subsubsection{Tri-nucleotide Composition (TNC)}\label{subsubsec:tnc}
+      Tri-nucleotide Composition (TNC) encoding captures the frequency of consecutive triplets of nucleotides in the sequence.
+      With four possible nucleotides (A, C, G, U), there are 64 possible combinations of triplets (AAA, AAC, AAG \dots, UUU).
+
+      For an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the trinucleotide composition for each triplet $XYZ$ is defined as:
+      \[
+        TNC_{XYZ} = \frac{\sum_{i=1}^{n-2} \mathbb{I}(s_i = X \text{ and } s_{i+1} = Y \text{ and } s_{i+2} = Z)}{n-2}
+      \]
+      where $X, Y, Z \in \{A, C, G, U\}$.
+      The final TNC encoding is a 64-dimensional vector representing the frequency of each trinucleotide triplet.
+
+    \subsubsection{Pseudo-nucleotide Composition (PseKNC)}\label{subsubsec:pseknc}
+      Pseudo-nucleotide Composition (PseKNC) encoding incorporates not only the frequency of nucleotides or nucleotide pairs but also the sequence order information.
+      It introduces a set of correlation factors, which capture the relationships between distant nucleotides along the sequence, adding an additional layer of sequence-order information to the standard nucleotide composition methods.
+
+      For an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the PseKNC encoding is calculated by first computing a set of correlation factors $\theta_l$ for $l$-th order correlations, where $l$ refers to the distance between nucleotides being compared. The final PseKNC encoding is a combination of the original nucleotide composition along with these correlation factors:
+      \[
+        PseKNC(S) = [NC_A, NC_C, NC_G, NC_U, \theta_1, \theta_2, \dots, \theta_L]
+      \]
+      where $L$ represents the highest correlation order considered.
+      The exact calculation of $\theta_l$ may depend on the specific method used but generally involves computing the correlation between nucleotides $l$ positions apart in the sequence.
+
+  \subsection{Nucleotide chemical property (NCP)}\label{enc:NCP}
+
+  \subsection{Pseudo nucleotide composition (PseKNC)}\label{enc:PseKNC}
+
+  \subsection{Pseudo Dinucleotide Composition (PseDNC)}\label{enc:PseDNC}
+
+  \subsection{Position-Specific Nucleotide Propensity (PSNP)}\label{enc:PSNP}
+
+  \subsection{Position-Specific Dinucleotide Propensity (PSDP)}\label{enc:PSDP}
+
+  \subsection{Position-Specific Trinucleotide Propensity (PSTNPss)}\label{subsec:pstnpss}
+    Position-Specific Trinucleotide Propensity (PSTNPss) is an encoding scheme that calculates the difference in trinucleotide frequencies between two predefined groups (e.g., positive and negative samples). This method encodes the propensity of each trinucleotide (combinations of three nucleotides) at each position in an RNA sequence by comparing its occurrence in a positive matrix and a negative matrix of known sequences.
+
+    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, the sequence is divided into overlapping trinucleotides (3-mers), such that for each position $j$ in the sequence (excluding the last two positions), the trinucleotide $T_j$ is defined as:
+    \[
+      T_j = s_j s_{j+1} s_{j+2}
+    \]
+
+    Let $P_j$ be the position-specific trinucleotide frequency matrix for the positive group and $N_j$ for the negative group. For each trinucleotide $T_j$ at position $j$, the positive frequency is given as $P_j(T_j)$, and the negative frequency is given as $N_j(T_j)$. These matrices are pre-calculated over a dataset of sequences.
+
+    The propensity encoding for trinucleotide $T_j$ at position $j$ is then computed as:
+    \[
+      PSTNPss_j(T_j) = \frac{P_j(T_j)}{|P|} - \frac{N_j(T_j)}{|N|}
+    \]
+    where $|P|$ is the total count of all trinucleotides in the positive matrix at position $j$, and $|N|$ is the total count of all trinucleotides in the negative matrix at position $j$.
+
+    The final encoding for the entire sequence $S$ is a vector of length $n - 2$, representing the propensity values for all trinucleotides across the sequence:
+    \[
+      PSTNPss(S) = [PSTNPss_1(T_1), PSTNPss_2(T_2), \dots, PSTNPss_{n-2}(T_{n-2})]
+    \]
+
+    The matrices $P_j$ and $N_j$ are computed from a set of sequences in the positive and negative groups, respectively. For each position $j$, the matrix entry corresponding to trinucleotide $T_j$ is updated based on the occurrences of $T_j$ in the sequences. This is defined as:
+    \[
+      P_j(T_j) = \sum_{i=1}^{m} \mathbb{I}(S_i[j:j+3] = T_j)
+    \]
+    where $S_i$ is the $i$-th sequence in the dataset, and $\mathbb{I}$ is an indicator function that equals 1 if the trinucleotide at position $j$ matches $T_j$ and 0 otherwise.
+
