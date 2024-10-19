@@ -12,8 +12,8 @@ class Encoder(BaseEncoder):
             encoder.fit(x, y)
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
-        self.fit(x, kwargs['y'])
-        return self.fit_transform(x)
+        self.fit(x, kwargs.get('y'))
+        return self.transform(x)
 
     def transform(self, x: DataFrame) -> DataFrame:
         encoded_frames = []

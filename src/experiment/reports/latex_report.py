@@ -1,5 +1,7 @@
 import subprocess
+import numpy as np
 from pathlib import Path
+
 from ..report import Report
 
 
@@ -58,16 +60,16 @@ def generate_scores_table(scores):
     \textbf{Scores} & \textbf{Values} \\
     \midrule
     \texttt{accuracy} & %s \\
-    \texttt{specificity} & %s \\
     \texttt{mathew's cc} & %s \\
-    \texttt{cohen Kappa} & %s \\
+    \texttt{specificity} & %s \\
+    \texttt{sensitivity} & %s \\
     \bottomrule
   \end{tabular}
 \end{table}''' % (
         round(scores.accuracy, 2),
-        round(scores.specificity, 2),
         round(scores.mcc, 2),
-        round(scores.cohen_kappa, 2),
+        round(scores.specificity, 2),
+        round(scores.sensitivity, 2),
     )
 
 
@@ -121,6 +123,54 @@ def generate_roc_curve(data):
       0 0
       1 1
     };''' % (data['auc'].round(decimals=2), '\n'.join(entries))
+    )
+
+def generate_average_roc_curve(individual_data, avg_data):
+    colors = [
+        'steelblue', 'darkorange', 'green', 'gray', 'purple',
+        'brown', 'pink', 'cyan', 'magenta', 'yellow'
+    ]
+
+    entries = []
+    for i, data in enumerate(individual_data):
+        fpr = data['fpr']
+        tpr = data['tpr']
+        color = colors[i % len(colors)]  # Cycle through colors if there are more folds than colors
+        entries.append(
+            r'''
+            \addplot[thin, color=%s, forget plot] table {
+            %s
+            };
+            ''' % (color, '\n'.join([f'      {fpr[j]} {tpr[j]}' for j in range(len(fpr))]))
+        )
+
+    # Prepare ROC data for the averaged curve
+    avg_fpr = avg_data['fpr']
+    avg_tpr = avg_data['tpr']
+    avg_auc = avg_data['auc'].round(decimals=2)
+
+    # Add the averaged curve as a bold line
+    avg_curve = r'''
+    \addlegendentry{Average AUC = $%s$}
+    \addplot[very thick, red] table {
+          0 0
+    %s
+    };
+    ''' % (avg_auc, '\n'.join([f'      {avg_fpr[i]} {avg_tpr[i]}' for i in range(len(avg_fpr))]))
+
+    # Combine all ROC curves and the average curve into one plot
+    return generate_tikz_plot(
+        'False $+ive$ rate',
+        'True $+ive$ rate',
+        'Receiver Operating Characteristic (ROC) curve',
+        fr'''
+        \addplot[black, dashed, dash pattern=on 4pt off 2pt, forget plot] table {{
+          0 0
+          1 1
+        }};
+        
+        {'\n'.join(entries) + avg_curve}
+        '''
     )
 
 
@@ -316,3 +366,120 @@ def generate_kfold_latex_report(reports: list[Report], name: str, out: str | Pat
 ''' % '\n\\clearpage\n'.join(generated))
     if generate_pdf:
         subprocess.run(['tectonic', str(out / f'{name}.tex')])
+
+
+def average_classification_report(reports):
+    avg_report = {}
+    num_folds = len(reports)
+
+    for key in reports[0].tables.classification_report:
+        avg_report[key] = {
+            'precision': np.mean([r.tables.classification_report[key]['precision'] for r in reports]),
+            'recall': np.mean([r.tables.classification_report[key]['recall'] for r in reports]),
+            'f1-score': np.mean([r.tables.classification_report[key]['f1-score'] for r in reports]),
+            'support': int(np.sum([r.tables.classification_report[key]['support'] for r in reports]))
+        }
+
+    return avg_report
+
+
+def average_confusion_matrix(reports):
+    matrices = np.array([r.tables.confusion_matrix for r in reports])
+    return np.mean(matrices, axis=0).astype(int)
+
+
+def average_scores(reports):
+    return Report.Scores(
+        float(np.mean([r.scores.accuracy for r in reports])),
+        float(np.mean([r.scores.mcc for r in reports])),
+        float(np.mean([r.scores.sensitivity for r in reports])),
+        float(np.mean([r.scores.specificity for r in reports]))
+    )
+
+
+def average_roc_curves(reports):
+    # Define a common set of FPR values to interpolate
+    mean_fpr = np.linspace(0, 1, 100)
+    tprs = []
+    aucs = []
+
+    for r in reports:
+        fpr = r.visualizations.roc['fpr']
+        tpr = r.visualizations.roc['tpr']
+        auc = r.visualizations.roc['auc']
+
+        # Interpolate each TPR to the common FPR
+        interp_tpr = np.interp(mean_fpr, fpr, tpr)
+        tprs.append(interp_tpr)
+        aucs.append(auc)
+
+    mean_tpr = np.mean(tprs, axis=0)
+    mean_auc = np.mean(aucs)
+
+    return {
+        'fpr': mean_fpr,
+        'tpr': mean_tpr,
+        'auc': mean_auc
+    }
+
+
+def generate_average_kfold_report(reports: list[Report], name: str, out: str | Path, generate_pdf=False):
+    if type(out) is str:
+        out = Path(out)
+
+    out.mkdir(exist_ok=True)
+
+    avg_classification_report = average_classification_report(reports)
+    avg_confusion_matrix = average_confusion_matrix(reports)
+    avg_scores = average_scores(reports)
+    avg_roc = average_roc_curves(reports)
+
+    individual_roc_data = [report.visualizations.roc for report in reports]
+
+    combined_roc_plot = generate_average_roc_curve(individual_roc_data, avg_roc)
+
+    with open(out / f'{name}.tex', 'w') as file:
+        file.write(r'''\documentclass{article}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[margin=.5in]{geometry}
+\usepackage{nopageno}
+\usetikzlibrary{patterns}
+
+\definecolor{gridgrey}{RGB}{176,176,176}
+\definecolor{legendgray}{RGB}{204,204,204}
+
+\definecolor{steelblue}{RGB}{31,119,180}
+\definecolor{darkorange}{RGB}{255,127,14}
+
+\setlength{\paperheight}{12in}
+
+\begin{document}
+
+\huge{\textbf{Averaged K-Fold Results}}
+\normalsize
+
+%s
+
+%s
+
+%s
+
+\begin{center}
+  \textbf{Average ROC Curve with K-Folds}
+  %s
+\end{center}
+
+\end{document}
+''' % (generate_scores_table(avg_scores),
+       generate_confusion_matrix(avg_confusion_matrix),
+       generate_classification_report(avg_classification_report),
+       combined_roc_plot
+       ))
+
+    if generate_pdf:
+        subprocess.run(['tectonic', str(out / f'{name}.tex')])
+

@@ -12,17 +12,17 @@
       This aimed to capture the biological relevance of nucleotide sequences for pseudouridine site prediction.
 
       \begin{itemize}
-        \item \textbf{Feature Encoding}: NCP~\ref{subsec:ncp}, PseKNC~\ref{subsubsec:pseknc}.
-        \item \textbf{Model}: SVM~\ref{model:SVM} with RBF kernel.
+        \item \textbf{Feature Encoding}: NCP, PseKNC
+        \item \textbf{Model}: SVM with RBF kernel.
       \end{itemize}
 
     \subsection*{PseUI \cite{he_pseui_2018}}\label{subsec:PseUI}
       This study combined various feature encoding schemes, including nucleotide composition (NC), dinucleotide composition (DC), pseudo dinucleotide composition (pseDNC), position-specific nucleotide propensity (PSNP), and position-specific dinucleotide propensity (PSDP). It employed sequential forward feature selection (SFS) to create a compact, discriminative feature set for pseudouridine site prediction.
 
       \begin{itemize}
-        \item \textbf{Feature Encoding}: NC~\ref{subsubsec:nc}, DNC~\ref{subsubsec:dnc}, PseDNC~\ref{enc:PseDNC}, PSNP~\ref{enc:PSNP}, PSDP~\ref{enc:PSDP}.
-        \item \textbf{Feature Selection}: SFS~\ref{fs:SFS}, evaluated with MCC~\ref{subsec:mcc}.
-        \item \textbf{Model}: SVM~\ref{model:SVM}, jackknife cross-validation.
+        \item \textbf{Feature Encoding}: NC, DNC, PseDNC, PSNP, PSDP
+        \item \textbf{Feature Selection}: SFS, evaluated with MCC
+        \item \textbf{Model}: SVM, jackknife cross-validation.
       \end{itemize}
 
     \subsection*{XG-PseU \cite{liu_xg-pseu_2020}}\label{subsec:XG-PseU}
@@ -30,9 +30,9 @@
       A two-step feature selection (forward selection and increment feature selection) was employed for optimal performance in pseudouridine site prediction.
 
       \begin{itemize}
-        \item \textbf{Feature Encoding}: NC~\ref{subsubsec:nc}, DNC~\ref{subsubsec:dnc}, TNC~\ref{subsubsec:tnc}, NCP~\ref{subsec:ncp}, ND~\ref{subsec:nd}, one-hot~\ref{subsec:binary}.
-        \item \textbf{Feature Selection}: Forward feature selection~\ref{fs:FFS} and IFS~\ref{fs:IFS}.
-        \item \textbf{Model}: XGBoost~\ref{model:Xgboost}, 10-fold cross-validation.
+        \item \textbf{Feature Encoding}: NC, DNC, TNC, NCP, ND, one-hot.
+        \item \textbf{Feature Selection}: Forward feature selection and IFS
+        \item \textbf{Model}: XGBoost, 10-fold cross-validation.
       \end{itemize}
 
     \subsection*{iPseU-NCP \cite{nguyen-vo_ipseu-ncp_2019}}\label{subsec:ipseu_ncp}
@@ -40,9 +40,9 @@
       Feature importance within the Random Forest model was used for feature selection.
 
       \begin{itemize}
-        \item \textbf{Feature Encoding}: NCP~\ref{subsec:ncp}, PseKNC~\ref{subsubsec:pseknc}, CKSNAP~\ref{subsubsec:pseknc}.
+        \item \textbf{Feature Encoding}: NCP, PseKNC, CKSNAP
         \item \textbf{Feature Selection}: Feature importance ranking in RF
-        \item \textbf{Model}: RF~\ref{model:RF}, grid search with 5-fold cross-validation.
+        \item \textbf{Model}: RF, grid search with 5-fold cross-validation.
       \end{itemize}
 
     \subsection*{PseU-FKeERF \cite{chen_fuzzy_2024}}\label{subsec:PseU-FKeERF}
@@ -50,46 +50,46 @@
       Fuzzy logic was used to expand the feature space, and feature selection was performed through fuzzy mean clustering and Gaussian fuzzy membership.
 
       \begin{itemize}
-        \item \textbf{Feature Encoding}: Binary~\ref{subsec:binary}, PSTNPss~\ref{subsec:pstnpss}, NCP~\ref{subsec:ncp}, PseKNC~\ref{subsubsec:pseknc}.
+        \item \textbf{Feature Encoding}: Binary, PSTNPss, NCP, PseKNC
         \item \textbf{Feature Selection}: Fuzzy mean clustering and Gaussian fuzzy membership.
-        \item \textbf{Model}: Fuzzy C-mean~\ref{model:fuzzy-c}, Evidential Random Forest~\ref{model:ERF}, cross-validation and independent tests.
+        \item \textbf{Model}: Fuzzy C-mean, Evidential Random Forest, cross-validation and independent tests.
       \end{itemize}
 
 
   \section{Comparison of Related Work}\label{sec:comparison-of-related-work}
     The table below presents a comparison of the encoding schemes, feature selection methods, machine learning algorithms, and performance metrics for the studies reviewed in this chapter.
 
-    \begin{table*}[h!]
+    \begin{table}[h!]
       \centering
       \input{tabels/H990_comparison}
-      \caption{Comparison of all Past studies on Homo sapiens dataset}
+      \caption{Comparison of all Past studies on H\_990 dataset using K-Fold}
       \label{tab:human_comp_table}
-    \end{table*}
+    \end{table}
 
     \begin{table}[h!]
       \centering
       \input{tabels/M944_comparison}
-      \caption{Comparison of all Past studies on Mus musculus dataset}
+      \caption{Comparison of all Past studies on M\_944 dataset using K-Fold}
       \label{tab:mouse_comp_table}
     \end{table}
 
     \begin{table}[h!]
       \centering
       \input{tabels/S628_comparison}
-      \caption{Comparison of all Past studies on Saccharomyces cerevisiae dataset}
+      \caption{Comparison of all Past studies on S\_628 dataset using K-Fold}
       \label{tab:yeast_comp_table}
     \end{table}
 
     \begin{table*}[h!]
       \centering
       \input{tabels/H200_comparison}
-      \caption{Comparison of all Past studies on Homo sapiens dataset}
+      \caption{Comparison of all Past studies on H\_200 dataset}
       \label{tab:human_indv_comp_table}
     \end{table*}
 
-        \begin{table*}[h!]
+    \begin{table*}[h!]
       \centering
       \input{tabels/S200_comparison}
-      \caption{Comparison of all Past studies on Homo sapiens dataset}
+      \caption{Comparison of all Past studies on S\_200 dataset}
       \label{tab:yeast_indv_comp_table}
     \end{table*}

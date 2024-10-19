@@ -15,7 +15,7 @@ TRI_NUCLEOTIDES_DICT = {
 }
 
 
-def encode(sequence: str, sizes: tuple[int, int], matrices: tuple[list, list]):
+def encode(sequence: str, target: int | None, sizes: tuple[int, int], matrices: tuple[list, list]):
     positives_matrix, negatives_matrix = matrices
 
     new_sample = []
@@ -24,16 +24,16 @@ def encode(sequence: str, sizes: tuple[int, int], matrices: tuple[list, list]):
         p_size, n_size = sizes
 
         p_number = positives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-        # if target is not None:
-        #     if target == 1 and p_number > 0:
-        #         p_size -= 1
-        #         p_number -= 1
+        if target is not None:
+            if target == 1 and p_number > 0:
+                p_size -= 1
+                p_number -= 1
 
         n_number = negatives_matrix[j][TRI_NUCLEOTIDES_DICT[kmer]]
-        # if target is not None:
-        #     if target == 0 and n_number > 0:
-        #         n_size -= 1
-        #         n_number -= 1
+        if target is not None:
+            if target == 0 and n_number > 0:
+                n_size -= 1
+                n_number -= 1
 
         new_sample.append(p_number / p_size - n_number / n_size)
     return new_sample
@@ -51,13 +51,11 @@ def _calculate_matrix(data, order):
 
 
 class Encoder(BaseEncoder):
-    def __init__(self, consider_train_target=False, consider_test_target=False):
+    def __init__(self):
         self._positive_size = None
         self._negative_size = None
         self._positives_matrix = None
         self._negatives_matrix = None
-        self.consider_test_target = consider_test_target
-        self.consider_train_target = consider_train_target
 
     @property
     def sizes(self) -> tuple[int, int]:
@@ -79,9 +77,9 @@ class Encoder(BaseEncoder):
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         self.fit(x, kwargs['y'])
-        return self.transform(x)
+        return self.transform(x, kwargs['y'])
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, y=None) -> DataFrame:
         if self._positive_size is None:
             raise 'Call `fit` before calling `transform` because this encoding needs collective sequence information'
 
@@ -89,7 +87,7 @@ class Encoder(BaseEncoder):
 
         new_samples = []
         for i in range(len(sequences)):
-            new_samples.append(encode(sequences[i], self.sizes, self.matrices))
+            new_samples.append(encode(sequences[i], None if y is None else y[i], self.sizes, self.matrices))
 
         return DataFrame(
             data=new_samples,

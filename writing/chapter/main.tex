@@ -1,38 +1,65 @@
 \documentclass[12pt]{book}
-
 \usepackage[margin=1in]{geometry}
-\usepackage{setspace}
-\onehalfspacing
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[english]{babel}
-
-\usepackage{amsmath, amssymb}
-\usepackage{pgfplots}
-\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{caption}
 \usepackage{chemfig}
 \usepackage{gensymb}
-
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{pgfplots}
+\usepackage{textcomp}
 \usepackage{graphicx}
-\usepackage{float}
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{caption}
-\usepackage{subcaption}
-
-\usepackage[numbers]{natbib}
-\bibliographystyle{plain}
-
 \usepackage{hyperref}
 \usepackage{csquotes}
 \usepackage{amsfonts}
+\usepackage{adjustbox}
+\usepackage{subcaption}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{tabularx, ragged2e}
+
+\usepackage[numbers]{natbib}
+\bibliographystyle{plain}
+\usetikzlibrary{patterns}
+\onehalfspacing
+
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{gridgrey}{RGB}{176,176,176}
+\definecolor{legendgray}{RGB}{204,204,204}
+\definecolor{steelblue}{RGB}{31,119,180}
+\definecolor{darkorange}{RGB}{255,127,14}
+
 \hypersetup{
   colorlinks=true,
   linkcolor=blue,
   citecolor=blue,
   filecolor=blue,
   urlcolor=blue
+}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize, % Small font size
+  numbers=none, % Line numbers on the left
+  stepnumber=1, % Line number step
+  tabsize=2, % Tab size
+  breaklines=true, % Allow line breaks
+  showstringspaces=false,
+  backgroundcolor=\color{backcolour},
+  keywordstyle=\color{blue},
+  stringstyle=\color{red},
+  commentstyle=\color{green},
+  captionpos=b,
+  framextopmargin=2em,
+  framexleftmargin=1em,
+  framexrightmargin=1em,
+  framexbottommargin=2em,
 }
 
 \setcounter{secnumdepth}{3}
@@ -41,11 +68,8 @@
 \newcommand{\pseudo}{\ensuremath{\Psi}} % Pseudouridine symbol for RNA research
 
 \begin{document}
-
-% Title Page
-  \title{Chapter Title: RNA Modification Detection in Pseudouridine}
-  \author{Your Name}
-  \date{\today}
+  \title{Pseudouridine Modification Detection in RNA}
+  \author{Muhammad Arish Sultan Khan}
 
   \maketitle
 
@@ -58,10 +82,12 @@
   \input{sections/1_introduction}
   \input{sections/2_related_work}
   \input{sections/3_methodology}
+  \input{sections/4_experiments}
+
 
   \chapter{Conclusion and Future Work}
-  \label{ch:conclusion}
+    \label{ch:conclusion}
 
 % Bibliography
-  \bibliography{references}
+    \bibliography{references}
 \end{document}

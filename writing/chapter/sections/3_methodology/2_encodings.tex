@@ -1,4 +1,12 @@
 \section{RNA Encodings}\label{sec:encodings}
+  These are essential for translating RNA sequences into formats that are more suitable for computational analysis in machine learning models.
+  Since RNA consists of sequences of nucleotides—adenine (A), cytosine (C), guanine (G), and uracil (U)—encoding these sequences into numerical representations allows for their effective use in various predictive models.
+  Different encoding schemes capture different properties of RNA sequences, such as nucleotide composition, structural patterns, or biochemical characteristics, helping researchers to model complex biological processes more accurately.
+  Currently, there are numerous encoding methods available, with over 20 popular encodings widely used in RNA-related research.
+  These include basic one-hot encoding, k-mer encoding, and more advanced structural and biochemical encodings.
+  By selecting the appropriate encoding scheme, researchers can enhance the performance of machine learning models for tasks such as RNA modification prediction or secondary structure analysis.
+  Tools like iLearn~\cite{chen_ilearn_2020} and iLearnPlus~\cite{chen_ilearnplus_2021}, widely adopted in the literature, have been instrumental in generating diverse RNA encoding schemes and are used by almost every researcher in the field.
+  Related studies, such as those by~\cite{chen_comprehensive_2020} and~\cite{wang_brief_2022}, have demonstrated the impact of various RNA encoding strategies on prediction accuracy and biological insights.
 
   \subsection{One-Hot Encoding}\label{subsec:binary}
     One-hot encoding is a straightforward method that assigns each nucleotide a unique binary vector of length four, representing the four possible nucleotides.
@@ -44,6 +52,25 @@
       ND(S) = [ND_{s_1}(1), ND_{s_2}(2), \dots, ND_{s_n}(n)]
     \]
     where $ND_{s_i}(i)$ is the density of nucleotide $s_i$ at position $i$.
+
+  \subsection{Nucleotide chemical property (NCP)}\label{subsec:ncp}
+    Nucleotide Chemical Property (NCP) encoding represents RNA sequences by assigning a vector of three predefined chemical properties to each nucleotide (A, C, G, U). The chemical properties are simplified into binary values representing attributes such as molecular properties. This encoding allows machine learning models to utilize a simplified chemical feature representation of each nucleotide.
+
+    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, where $s_i \in \{A, C, G, U\}$, each nucleotide is represented by a three-dimensional binary vector encoding specific properties. For a nucleotide $s_i$, the encoding is determined as:
+    \[
+      NCP(s_i) = \begin{cases}
+      [1.0, 1.0, 1.0]
+                   , & \text{if } s_i = A \\
+                   [0.0, 1.0, 0.0], & \text{if } s_i = C \\
+                   [1.0, 0.0, 0.0], & \text{if } s_i = G \\
+                   [0.0, 0.0, 1.0], & \text{if } s_i = U
+      \end{cases}
+    \]
+
+    The final NCP encoding for the sequence $S$ is the concatenation of the vectors for each nucleotide, resulting in a vector of length $3n$:
+    \[
+      NCP(S) = [NCP(s_1), NCP(s_2), \dots, NCP(s_n)]
+    \]
 
   \subsection{Nucleotide Composition Encoding}\label{subsec:nucleotide-composition-encoding}
     Nucleotide composition encodings are used to capture the frequency of occurrence of nucleotides within RNA sequences.
@@ -98,25 +125,6 @@
       \]
       where $L$ represents the highest correlation order considered.
       The exact calculation of $\theta_l$ may depend on the specific method used but generally involves computing the correlation between nucleotides $l$ positions apart in the sequence.
-
-  \subsection{Nucleotide chemical property (NCP)}\label{subsec:ncp}
-    Nucleotide Chemical Property (NCP) encoding represents RNA sequences by assigning a vector of three predefined chemical properties to each nucleotide (A, C, G, U). The chemical properties are simplified into binary values representing attributes such as molecular properties. This encoding allows machine learning models to utilize a simplified chemical feature representation of each nucleotide.
-
-    Given an RNA sequence $S = \{s_1, s_2, \dots, s_n\}$, where $s_i \in \{A, C, G, U\}$, each nucleotide is represented by a three-dimensional binary vector encoding specific properties. For a nucleotide $s_i$, the encoding is determined as:
-    \[
-      NCP(s_i) = \begin{cases}
-      [1.0, 1.0, 1.0]
-                   , & \text{if } s_i = A \\
-                   [0.0, 1.0, 0.0], & \text{if } s_i = C \\
-                   [1.0, 0.0, 0.0], & \text{if } s_i = G \\
-                   [0.0, 0.0, 1.0], & \text{if } s_i = U
-      \end{cases}
-    \]
-
-    The final NCP encoding for the sequence $S$ is the concatenation of the vectors for each nucleotide, resulting in a vector of length $3n$:
-    \[
-      NCP(S) = [NCP(s_1), NCP(s_2), \dots, NCP(s_n)]
-    \]
 
   \subsection{Position-Specific Nucleotide Propensity}\label{subsec:position-specific-nucleotide-propensity}
     Position-specific propensity encodings capture how the frequency of nucleotides, dinucleotides, or trinucleotides varies at each position of the RNA sequence between two predefined groups (e.g., positive and negative samples). These methods provide insights into position-specific variations in nucleotide composition between groups. Below are the mathematical representations for nucleotide, dinucleotide, and trinucleotide propensities.

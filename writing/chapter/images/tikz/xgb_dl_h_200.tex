@@ -1,0 +1,52 @@
+\begin{tikzpicture}
+  \begin{axis}
+    [
+    ylabel={True $+ive$ rate},
+    xlabel={False $+ive$ rate},
+    tick align=outside,
+    tick pos=left,
+    ytick style={color=black},
+    xtick style={color=black},
+    grid style={gridgrey},
+    xmajorgrids,
+    ymajorgrids,
+    legend cell align={left},
+    legend columns=1,
+    legend style={
+      fill opacity=0.8,
+      draw opacity=1,
+      text opacity=1,
+      at={(0.97,0.03)},
+      anchor=south east,
+      draw=legendgray,
+    },
+    ]
+    \addlegendentry{AUC = $[1.]$}
+    \addplot[thick, darkorange] table {
+      0.0 0.0
+      0.0 0.01
+      0.0 0.1
+      0.0 0.12
+      0.0 0.2
+      0.0 0.26
+      0.0 0.3
+      0.0 0.33
+      0.0 0.62
+      0.0 0.64
+      0.0 0.66
+      0.0 0.69
+      0.0 0.77
+      0.0 0.8
+      0.0 0.82
+      0.0 0.84
+      0.0 0.87
+      0.0 0.89
+      0.0 1.0
+      1.0 1.0
+    };
+    \addplot[black, dashed, dash pattern=on 4pt off 2pt] table {
+      0 0
+      1 1
+    };
+  \end{axis}
+\end{tikzpicture}

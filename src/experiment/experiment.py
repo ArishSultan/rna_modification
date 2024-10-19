@@ -1,6 +1,5 @@
 from typing import Callable, Any
 from pandas import DataFrame, Series
-from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 
 from .reports import Report
@@ -11,7 +10,7 @@ from ..features.encoder import BaseEncoder
 
 class Experiment:
     def __init__(self, factory: ModelFactory, test: SeqBunch | None, train: SeqBunch, encoding, k=5,
-                 should_fit_encoder=True):
+                 should_fit_encoder=True, use_targets_test=False):
         self.k = k
         self.test = test
         self.train = train
@@ -20,7 +19,7 @@ class Experiment:
         self.should_fit_encoder = should_fit_encoder
 
     def run(self):
-        k_fold = KFold(n_splits=self.k, random_state=42, shuffle=True)
+        k_fold = StratifiedKFold(n_splits=self.k, random_state=42, shuffle=True)
 
         if self.encoding is not None:
             if self.should_fit_encoder:
@@ -32,7 +31,7 @@ class Experiment:
         y = self.train.targets
 
         k_fold_reports = []
-        for train_index, test_index in k_fold.split(x):
+        for train_index, test_index in k_fold.split(x, y):
             train_x, test_x = x.iloc[train_index], x.iloc[test_index]
             train_y, test_y = y.iloc[train_index], y.iloc[test_index]
 
@@ -55,6 +54,79 @@ class Experiment:
         model = self.factory.create_model()
         model.fit(x, y)
 
+        return {
+            'train': k_fold_reports,
+            'test': Report.create_report(model, (test_x, test_y))
+        }
+
+
+class ExperimentFixed:
+    def __init__(self, factory: ModelFactory, test: SeqBunch | None, train: SeqBunch, encoding, k=5,
+                 should_fit_encoder=True, use_targets_test=False):
+        self.k = k
+        self.test = test
+        self.train = train
+        self.factory = factory
+        self.encoding = encoding
+        self.use_targets_test = use_targets_test
+        self.should_fit_encoder = should_fit_encoder
+
+    def run(self):
+        k_fold = StratifiedKFold(n_splits=self.k, random_state=42, shuffle=True)
+
+        x = self.train.samples
+        y = self.train.targets
+
+        k_fold_reports = []
+        for train_index, test_index in k_fold.split(x, y):
+            # Split the data into training and testing sets
+            train_x, test_x = x.iloc[train_index], x.iloc[test_index]
+            train_y, test_y = y.iloc[train_index], y.iloc[test_index]
+
+            # Apply encoding to the training set
+            if self.encoding is not None:
+                if self.should_fit_encoder:
+                    train_x = self.encoding.fit_transform(train_x, y=train_y.values)
+                else:
+                    train_x = self.encoding.transform(train_x)
+
+                if self.use_targets_test:
+                    test_x = self.encoding.transform(test_x, y=test_y.values)
+                else:
+                    test_x = self.encoding.transform(test_x)
+
+            # Train the model
+            model = self.factory.create_model()
+            model.fit(train_x, train_y)
+
+            # Evaluate the model and store the report
+            k_fold_reports.append(Report.create_report(model, (test_x, test_y)))
+
+        if self.test is None:
+            return {
+                'train': k_fold_reports
+            }
+
+        # Process the external test set if provided
+        test_x = self.test.samples
+        test_y = self.test.targets
+
+        if self.encoding is not None:
+            if self.should_fit_encoder:
+                x = self.encoding.fit_transform(x, y=y)
+            else:
+                x = self.encoding.transform(x)
+
+            if self.use_targets_test:
+                test_x = self.encoding.transform(test_x, y=test_y)
+            else:
+                test_x = self.encoding.transform(test_x)
+
+        # Train the model on the full training data
+        model = self.factory.create_model()
+        model.fit(x, y)
+
+        # Return both k-fold training results and external test results
         return {
             'train': k_fold_reports,
             'test': Report.create_report(model, (test_x, test_y))

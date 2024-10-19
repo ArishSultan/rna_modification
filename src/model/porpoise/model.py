@@ -1,3 +1,4 @@
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 from sklearn.pipeline import Pipeline
@@ -32,7 +33,7 @@ class Model(BaseModel):
         c3 = SVC(C=26397.4411193282, gamma=0.0212845791037017, probability=True)
 
         self._model = StackingClassifier(
-            meta_classifier=LogisticRegression(multi_class='ovr', n_jobs=1, solver='liblinear'),
+            meta_classifier=OneVsRestClassifier(LogisticRegression(n_jobs=1, solver='liblinear')),
             classifiers=[
                 Pipeline([('columns', s0), ('xgb', c0)]),
                 Pipeline([('columns', s1), ('gradient_boost', c1)]),

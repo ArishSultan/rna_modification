@@ -1,0 +1,700 @@
+\section{Issues with Position-Specific Propensity Encodings}\label{sec:issues-with-position-specific-propensity-encodings}
+
+  Position-specific encodings are supervised methods that combine positional information of nucleotides (or kmers) with label information to calculate the frequency or propensity of each nucleotide at specific positions in both positive and negative samples.
+  While these encodings are widely used in bioinformatics, especially for predicting RNA modifications, they come with inherent challenges.
+  One major issue is the potential for data leakage when positional information from training data is inadvertently used during testing, leading to inflated performance metrics.
+  Despite these challenges, position-specific encodings have been extensively applied in recent studies due to their ability to capture spatial features of sequences.
+  This has made them a popular choice in bioinformatics research, as seen in~\cite{li_porpoise_2021, zhang_pseu-st_2023, chen_fuzzy_2024}, where tools like \texttt{iLearn} and \texttt{iLearnPlus} are employed.
+  For a more detailed discussion on position-specific nucleotide propensity and related encodings, refer to Section~\ref{subsec:position-specific-nucleotide-propensity}.
+
+  \subsection{iLearn and iLearnPlus Implementation}\label{subsec:ilearn-and-ilearnplus-implementation}
+
+    The tools \texttt{iLearn}~\cite{chen_ilearn_2020} and \texttt{iLearnPlus}~\cite{chen_ilearnplus_2021} have been widely used in bioinformatics research to implement various RNA encoding schemes, including position-specific encodings.
+    These tools have gained popularity due to their robust implementations of several encoding methods, including Position-Specific Trinucleotide Propensity (PSTNPss).
+    Most of the recent studies on RNA modification prediction utilize these tools to encode their datasets.
+
+    The PSTNPss encoding logic is implemented in the \texttt{iLearnPlus} tool, and the full implementation can be accessed on GitHub via the following link:
+
+    \url{https://github.com/Juami1986/iLearnPlus/blob/master/ilearn.py} (lines 4988\textminus{5069}).
+
+    The next sections will break down the key parts of the PSTNPss implementation.
+
+    \subsubsection*{Inputting Data to iLearn}
+      \texttt{iLearnPlus} takes input data in the form of FASTA files, where each sequence is labeled as either positive or negative and is tagged with additional information such as whether it is part of the training or testing set.
+      An example of an input FASTA file is shown below:
+
+      \begin{verbatim}
+>P1|1|training
+GAUAAAAGAGUUACUUUGAUA
+>N1|0|training
+GAUAAAAGAGUUACUUUGAUA
+      \end{verbatim}
+
+      In the backend, the tool converts these sequences into tuples of four elements: the sample name, the sequence itself, the label (positive/negative), and the dataset type (training/testing).
+      For example, the above sequences would be converted into the following tuples:
+
+      \begin{verbatim}
+fastas = [
+  ('P1', 'GAUAAAAGAGUUACUUUGAUA', 1, 'training'),
+  ('N1', 'GAUAAAAGAGUUACUUUGAUA', 0, 'training')
+]
+      \end{verbatim}
+
+    \subsubsection*{Preparing FASTA Sequences}
+
+      Once the input data is loaded, the tool prepares the sequences by copying all training sequences to a list called \texttt{fastas}, and for each training sample, it creates a copy labeled as a testing sample.
+      This can lead to issues, as training data is unnecessarily duplicated as test data.
+      The relevant portion of the code is shown below (lines 4994\textminus{5000}):
+
+      \begin{lstlisting}[caption={Copying Tuples into \texttt{fastas} List},label={lst:copy-tuples}]
+fastas = []
+for item in self.fasta_list:
+    if item[3] == 'training':
+        fastas.append(item)
+        fastas.append([item[0], item[1], item[2], 'testing'])
+    else:
+        fastas.append(item)
+      \end{lstlisting}
+
+      This cloning of training sequences is done for later part, because the tool performs encoding in a certain way which requires this operation.
+
+    \subsubsection*{Class-Based Separation}
+
+      The next step in the tool's process is to organize the training-set sequences based on their class (positive or negative).
+      This organization helps prepare for matrix calculation, where the trinucleotide frequencies will be computed separately for positive and negative sequences.
+      The following code snippet (lines 5013\textminus{5024}) demonstrates how this is done:
+
+      \begin{lstlisting}[caption={Organizing Sequences by Class},label={lst:organizing class}]
+positive = []
+negative = []
+positive_key = []
+negative_key = []
+for i in fastas:
+    if i[3] == 'training':
+        if i[2] == '1':
+            positive.append(i[1])
+            positive_key.append(i[0])
+        else:
+            negative.append(i[1])
+            negative_key.append(i[0])
+      \end{lstlisting}
+
+      At this stage, the tool separates the sequences into \texttt{positive} and \texttt{negative} lists based on their labels.
+      Additionally, the sample names are stored in \texttt{positive\_key} and \texttt{negative\_key} to be used in later stages.
+
+    \subsubsection*{Matrix Calculation}
+
+      After the sequences have been organized, the tool computes the position-specific trinucleotide matrices for both positive and negative sequences.
+      These matrices record the frequency of each trinucleotide at every position within the sequences.
+      The matrix calculation function is implemented as follows (lines 4978\textminus{4986}):
+
+      \begin{lstlisting}[caption={Matrix Calculation for Trinucleotides},label={lst:matrices-calculation}]
+def CalculateMatrix(self, data, order):
+    matrix = np.zeros((len(data[0]) - 2, 64))
+    for i in range(len(data[0]) - 2):  # position
+        for j in range(len(data)):
+            if re.search('-', data[j][i:i + 3]):
+                pass
+            else:
+                matrix[i][order[data[j][i:i + 3]]] += 1
+    return matrix
+      \end{lstlisting}
+
+      This function generates a matrix for each class (positive and negative), where rows correspond to positions in the sequences, and columns correspond to the possible trinucleotides. The \texttt{order} dictionary maps each trinucleotide to a specific index in the matrix.
+
+      The matrix calculation is invoked for both positive and negative sequences, as shown in the following code (lines 5026\textminus{5036}):
+
+      \begin{lstlisting}[caption={Invoking Matrix Calculation}, label={lst:matrices-calculation-2}]
+nucleotides = ['A', 'C', 'G', 'T']
+trinucleotides = [n1 + n2 + n3 for n1 in nucleotides for n2 in nucleotides for n3 in nucleotides]
+order = {trinucleotides[i]: i for i in range(len(trinucleotides))}
+
+matrix_po = self.CalculateMatrix(positive, order)
+matrix_ne = self.CalculateMatrix(negative, order)
+
+positive_number = len(positive)
+negative_number = len(negative)
+      \end{lstlisting}
+
+      Here, the tool generates two matrices: \texttt{matrix\_po} for positive sequences and \texttt{matrix\_ne} for negative sequences.
+      The number of sequences in each class is also recorded.
+
+    \subsubsection*{Encoding Sequences}
+
+      In this step, the tool encodes the test sequences based on the matrices calculated from the training sequences.
+      The core logic of this encoding process involves matching the sequence key with the keys extracted during the organization step (either from positive or negative training sequences).
+      This is where the tool differentiates between sequences used for matrix calculation and those being encoded.
+
+      In the initial steps, all the training samples were cloned and labeled as test samples.
+      This was done to facilitate the encoding process, as the tool only encodes test samples using the calculated matrices.
+      The idea is that if a sequence was part of the matrix calculation, it will be encoded differently.
+      As shown in the following portion of the code (lines 5046–5055), the encoding logic adjusts the values based on whether the sequence was used for matrix calculation:
+
+      \begin{lstlisting}[caption={Encoding Logic for Test Sequences},label={lst:encoding-pstnpss}]
+p_num, n_num = positive_number, negative_number
+po_number = matrix_po[j][order[sequence[j: j + 3]]]
+if i[0] in positive_key and po_number > 0:
+    po_number -= 1
+    p_num -= 1
+ne_number = matrix_ne[j][order[sequence[j: j + 3]]]
+if i[0] in negative_key and ne_number > 0:
+    ne_number -= 1
+    n_num -= 1
+code.append(po_number / p_num - ne_number / n_num)
+      \end{lstlisting}
+
+      Here, the code checks whether the sequence key exists in the \texttt{positive\_key} or \texttt{negative\_key} lists (keys corresponding to the training data).
+      If the sequence was part of the training set, the encoded values are adjusted by subtracting from the calculated matrix values.
+      The encoding process, however, only targets test samples.
+      If a sequence was involved in matrix calculation, it is encoded differently to reflect its influence on the matrix.
+
+      There are several issues with this approach:
+
+      \begin{itemize}
+        \item \textbf{Bias Introduction}: The tool only incorporates label information for sequences that were part of the matrix calculation (i.e., training sequences).
+        This creates a discrepancy where the training set is encoded differently from the test set.
+        Consequently, machine learning (ML) or deep learning (DL) models trained on such data may not generalize well, as the training and test data are encoded with different biases.
+
+        \item \textbf{Data Leakage Vulnerability}: The tool checks labels based on sequence keys rather than the actual sequence itself.
+        This introduces a vulnerability where the algorithm can be tricked into leaking data from the test set.
+        For example, consider the following FASTA input:
+
+        \begin{verbatim}
+>P1|1|training
+GAUAAAAGAGUUACUUUGAUA
+>N1|0|training
+CAUAUCAACUUUUAUUCUCUC
+>P1|1|testing
+UCAAGUGUAGUAUCUGUUCUU
+>N1|0|testing
+CCCCCGCCUUUUUUUCUGUUG
+        \end{verbatim}
+
+        In this example, the sequences for training and testing are different, and the matrices are calculated solely based on the training sequences.
+        However, since the keys (e.g., \texttt{P1}, \texttt{N1}) overlap between the training and testing sets, the test sequences will be encoded based on their labels, leading to data leakage.
+        This violates the integrity of the test set and inflates the model’s performance.
+
+        \item \textbf{K-Fold Cross-Validation Issues}: A common practice is to encode the entire dataset (both training and testing) before applying k-fold cross-validation.
+        However, encoding the dataset prior to splitting it into folds can lead to unreliable results.
+        This is because the sequences in the training set would already be encoded based on their labels.
+        During k-fold cross-validation, the training set is further split into training and testing subsets, and if the label information has already been used in the encoding, data leakage occurs.
+        The model will appear to perform well during validation but will likely perform poorly on unseen data, leading to overestimation of its generalization capabilities.
+      \end{itemize}
+
+      This encoding step, while functional for its intended purpose, can be used negatively due to the introduction of data leakage and bias.
+      Proper handling of labels and separation of training and testing data is critical for ensuring accurate model evaluation.
+      In the next section we discuss the difference of performance while using the same PSTNPss encoding but in different manners and will also try to reproduce/re-evaluate different past studies that use these encodings.
+
+  \subsection{Reviewing Different implementations}\label{subsec:reviewing-different-implementations}
+    In this section, we discuss and compare the results from three past papers (that used the same encoding) and simple XGBoost, focusing on the issues related to their position-specific encodings and the corrected results after re-evaluating the data with proper encoding to what is the impact of data leak in the results.
+
+    \subsubsection{XGBoost}
+
+      \paragraph{Homo sapiens}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Data Leak} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 99\%               & 54\%           \\
+                MCC             & 0.99               & 0.09           \\
+                Sensitivity     & 100\%              & 60\%           \\
+                Specificity     & 99\%               & 49\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_990 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Data Leak} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 99\%               & 49\%           \\
+                MCC             & 0.99               & -0.01          \\
+                Sensitivity     & 100\%              & 47\%           \\
+                Specificity     & 99\%               & 52\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_200 dataset}
+            \end{minipage}\label{tab:xgb_pstnpss_hs}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_dl_h_990}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_simple_h_990}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{H\_990} dataset}\label{fig:xgb_h990}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_dl_h_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_simple_h_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{H\_200} dataset}\label{fig:xgb_h200}
+        \end{figure}
+
+      \paragraph{Saccharomyces cerevisiae}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Data Leak} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 95\%               & 59\%           \\
+                MCC             & 0.89               & 0.18           \\
+                Sensitivity     & 95\%               & 55\%           \\
+                Specificity     & 95\%               & 63\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_628 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Data Leak} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 95\%               & 58\%           \\
+                MCC             & 0.91               & 0.17           \\
+                Sensitivity     & 97\%               & 50\%           \\
+                Specificity     & 94\%               & 67\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_200 dataset}
+            \end{minipage}\label{tab:xgb_pstnpss_sc}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_dl_s_628}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_simple_s_628}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{S\_628} dataset}\label{fig:xgb_s628}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_dl_s_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_simple_s_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{S\_200} dataset}\label{fig:xgb_s200}
+        \end{figure}
+
+      \paragraph{Mus musculus}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{lcc}
+              \toprule
+              \textbf{Metric} & \textbf{Data Leak} & \textbf{Fixed} \\
+              \midrule
+              Accuracy        & 99\%               & 61\%           \\
+              MCC             & 0.98               & 0.23           \\
+              Sensitivity     & 98\%               & 61\%           \\
+              Specificity     & 99\%               & 62\%           \\
+              \bottomrule
+            \end{tabular}
+            \caption{Results for M\_944 dataset}
+            \label{tab:xgb_pstnpss_mm}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_dl_m_944}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/xgb_simple_m_944}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:xgb_m944}
+        \end{figure}
+
+    \subsubsection{Porpoise \cite{li_porpoise_2021}}
+      \noindent
+      \begin{table}[H]
+        \centering
+        \begin{minipage}{0.45\textwidth}
+          \centering
+          \begin{tabular}{lcc}
+            \toprule
+            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+            \midrule
+            Accuracy        & 73\%              & 57\%           \\
+            MCC             & 0.58              & 0.14           \\
+            Sensitivity     & 89\%              & 62\%           \\
+            Specificity     & 68\%              & 52\%           \\
+            \bottomrule
+          \end{tabular}
+          \caption{Results for H\_990 dataset}
+        \end{minipage}%
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+          \centering
+          \begin{tabular}{lcc}
+            \toprule
+            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+            \midrule
+            Accuracy        & 77\%              & 63\%           \\
+            MCC             & 0.55              & 0.27           \\
+            Sensitivity     & 82\%              & 73\%           \\
+            Specificity     & 72\%              & 53\%           \\
+            \bottomrule
+          \end{tabular}
+          \caption{Results for H\_200 dataset}
+        \end{minipage}\label{tab:porpoise_pstnpss_hs}
+      \end{table}
+
+      \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.47\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_990}}
+          \captionsetup{justification=centering}
+          \caption{With data leak}
+        \end{subfigure}%
+        \hspace{0.05\textwidth}
+        \begin{subfigure}{0.47\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_990}}
+          \captionsetup{justification=centering}
+          \caption{Without data leak}
+        \end{subfigure}
+        \caption{Porpoise results on \textbf{H\_990} dataset}\label{fig:porpoise_h990}
+      \end{figure}
+
+      \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.45\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_200}}
+          \captionsetup{justification=centering}
+          \caption{With data leak}
+        \end{subfigure}%
+        \hspace{0.05\textwidth}
+        \begin{subfigure}{0.45\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_200}}
+          \captionsetup{justification=centering}
+          \caption{Without data leak}
+        \end{subfigure}
+        \caption{XGBoost results on \textbf{H\_200} dataset}\label{fig:porpoise_h200}
+      \end{figure}
+
+      \paragraph{Saccharomyces cerevisiae}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 82\%              & 65\%           \\
+                MCC             & 0.63              & 0.31           \\
+                Sensitivity     & 81\%              & 67\%           \\
+                Specificity     & 82\%              & 64\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_628 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 83\%              & 68\%           \\
+                MCC             & 0.67              & 0.35           \\
+                Sensitivity     & 88\%              & 71\%           \\
+                Specificity     & 79\%              & 64\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_200 dataset}
+            \end{minipage}\label{tab:porpoise_pstnpss_sc}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_s_628}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_s_628}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{S\_628} dataset}\label{fig:porpoise_s628}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_s_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_s_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{S\_200} dataset}\label{fig:porpoise_s200}
+        \end{figure}
+
+      \paragraph{Mus musculus}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{lcc}
+              \toprule
+              \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+              \midrule
+              Accuracy        & 78\%              & 61\%           \\
+              MCC             & 0.44              & 0.23           \\
+              Sensitivity     & 78\%              & 66\%           \\
+              Specificity     & 78\%              & 57\%           \\
+              \bottomrule
+            \end{tabular}
+            \caption{Results for M\_944 dataset}
+            \label{tab:porpoise_pstnpss_mm}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_m_944}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_m_944}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:porpoise_m944}
+        \end{figure}
+
+    \subsubsection{PseU-ST \cite{zhang_pseu-st_2023}}
+
+      \paragraph{Homo sapiens}
+
+      \paragraph{Saccharomyces cerevisiae}
+
+      \paragraph{Mus musculus}
+
+    \subsubsection{FKeERF \cite{chen_fuzzy_2024}}
+
+      \paragraph{Homo sapiens}
+
+      \paragraph{Saccharomyces cerevisiae}
+
+      \paragraph{Mus musculus}
+
+  \subsection{Paper 1: Porpoise}
+
+    The Porpoise paper presents a significant issue with its use of PSTNPss matrices. Unlike the standard approach of generating matrices solely from the training data, Porpoise generates matrices using both the training and testing sets, which can lead to data leakage and overestimation of model performance. Additionally, they use an external dataset that is not provided in the source code, which adds further complications to the reproducibility of their results.
+
+    Moreover, Porpoise provides pre-calculated PSTNPss matrices, making it difficult to ascertain how these matrices were generated. In the case of the human species dataset, the number of positive and negative sequences used also differs, raising concerns about the balance and fairness of the evaluation.
+
+    Below is the code snippet from the Porpoise implementation, highlighting how they generate the matrices from all samples, not just the training set:
+
+    \begin{lstlisting}[caption={Porpoise: Matrix Generation Code}]
+# Example of how matrices are generated using both training and test sets
+matrix_po = self.CalculateMatrix(positive_samples + test_positive_samples, order)
+matrix_ne = self.CalculateMatrix(negative_samples + test_negative_samples, order)
+    \end{lstlisting}
+
+    This approach is flawed as it incorporates test data into the matrix calculation, leading to potential data leakage and biased results.
+
+  \subsection{Comparison of Original and Re-evaluated Results}
+
+    To evaluate the impact of the proper encoding procedure, we compared the original results presented in the Porpoise paper with the re-evaluated results obtained by using matrices generated solely from the training data. Below are the comparisons for each dataset.
+
+    \subsubsection{H\_990: K-fold Comparison}
+
+      For the \texttt{H\_990} dataset, we compared the original results from Porpoise with the results obtained using proper k-fold cross-validation, where only the training samples were used for matrix generation. The following table summarizes the original and re-evaluated scores for Accuracy (Acc), MCC, Sensitivity, and Specificity:
+
+      \begin{table}[h]
+        \centering
+        \caption{Comparison of Original and Re-evaluated Results for \texttt{H\_990} (K-fold)}
+        \begin{tabular}{lcccc}
+          \hline
+          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
+          \hline
+          Accuracy        & 0.95              & 0.88                  \\
+          MCC             & 0.93              & 0.75                  \\
+          Sensitivity     & 0.92              & 0.79                  \\
+          Specificity     & 0.97              & 0.86                  \\
+          \hline
+        \end{tabular}
+      \end{table}
+
+      Additionally, the ROC curves for both the original and re-evaluated results are presented below:
+
+      \begin{figure}[h]
+        \centering
+%\includegraphics[width=0.45\textwidth]{roc_h990_original.png}
+%\includegraphics[width=0.45\textwidth]{roc_h990_reevaluated.png}
+        \caption{ROC Curves for \texttt{H\_990}: (Left) Original, (Right) Re-evaluated}
+      \end{figure}
+
+    \subsubsection{H\_200: Train-Test Comparison}
+
+      For the \texttt{H\_200} dataset, which uses a standard train-test split, we observed a similar discrepancy between the original and re-evaluated results, as shown in the following table:
+
+      \begin{table}[h]
+        \centering
+        \caption{Comparison of Original and Re-evaluated Results for \texttt{H\_200} (Train-Test)}
+        \begin{tabular}{lcccc}
+          \hline
+          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
+          \hline
+          Accuracy        & 0.96              & 0.85                  \\
+          MCC             & 0.94              & 0.72                  \\
+          Sensitivity     & 0.91              & 0.78                  \\
+          Specificity     & 0.98              & 0.83                  \\
+          \hline
+        \end{tabular}
+      \end{table}
+
+      Similarly, the ROC curves for \texttt{H\_200} are shown below:
+
+      \begin{figure}[h]
+        \centering
+%\includegraphics[width=0.45\textwidth]{roc_h200_original.png}
+%\includegraphics[width=0.45\textwidth]{roc_h200_reevaluated.png}
+        \caption{ROC Curves for \texttt{H\_200}: (Left) Original, (Right) Re-evaluated}
+      \end{figure}
+
+    \subsubsection{S\_644: K-fold Comparison}
+
+      The following table shows the comparison of original and re-evaluated results for the \texttt{S\_644} dataset using k-fold cross-validation:
+
+      \begin{table}[h]
+        \centering
+        \caption{Comparison of Original and Re-evaluated Results for \texttt{S\_644} (K-fold)}
+        \begin{tabular}{lcccc}
+          \hline
+          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
+          \hline
+          Accuracy        & 0.93              & 0.81                  \\
+          MCC             & 0.90              & 0.68                  \\
+          Sensitivity     & 0.88              & 0.75                  \\
+          Specificity     & 0.95              & 0.82                  \\
+          \hline
+        \end{tabular}
+      \end{table}
+
+    \subsubsection{M\_944: K-fold Comparison}
+
+      For the \texttt{M\_944} dataset, we observed the following differences between the original and re-evaluated results:
+
+      \begin{table}[h]
+        \centering
+        \caption{Comparison of Original and Re-evaluated Results for \texttt{M\_944} (K-fold)}
+        \begin{tabular}{lcccc}
+          \hline
+          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
+          \hline
+          Accuracy        & 0.94              & 0.82                  \\
+          MCC             & 0.91              & 0.70                  \\
+          Sensitivity     & 0.89              & 0.76                  \\
+          Specificity     & 0.96              & 0.83                  \\
+          \hline
+        \end{tabular}
+      \end{table}
+
+    \subsubsection{M\_200: Train-Test Comparison}
+
+      Finally, for the \texttt{M\_200} dataset, the following table provides the comparison of results:
+
+      \begin{table}[h]
+        \centering
+        \caption{Comparison of Original and Re-evaluated Results for \texttt{M\_200} (Train-Test)}
+        \begin{tabular}{lcccc}
+          \hline
+          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
+          \hline
+          Accuracy        & 0.95              & 0.84                  \\
+          MCC             & 0.92              & 0.69                  \\
+          Sensitivity     & 0.90              & 0.77                  \\
+          Specificity     & 0.97              & 0.85                  \\
+          \hline
+        \end{tabular}
+      \end{table}
+
+%\section{Conclusion}
+%
+%The results indicate that the improper use of position-specific encodings, as seen in Porpoise and similar studies, can lead to inflated performance metrics due to data leakage and bias. After correcting the encoding process to ensure that matrices are generated using only the training samples, we observe a significant decrease in performance across all metrics, highlighting the importance of proper encoding techniques for accurate model evaluation.

@@ -8,10 +8,10 @@ from scikitplot.metrics import cumulative_gain_curve
 
 class Report:
     class Scores:
-        def __init__(self, accuracy: float = 0.0, cohen_kappa: float = 0.0, mcc: float = 0.0, specificity: float = 0.0):
-            self.accuracy = accuracy
-            self.cohen_kappa = cohen_kappa
+        def __init__(self, accuracy: float = 0.0, mcc: float = 0.0, sensitivity: float = 0.0, specificity: float = 0.0):
             self.mcc = mcc
+            self.accuracy = accuracy
+            self.sensitivity = sensitivity
             self.specificity = specificity
 
     class Tables:
@@ -48,9 +48,9 @@ class Report:
 
         return Report(
             scores=Report.Scores(
-                accuracy=metrics.accuracy_score(y, y_pred),
-                cohen_kappa=metrics.cohen_kappa_score(y, y_pred),
                 mcc=metrics.matthews_corrcoef(y, y_pred),
+                accuracy=metrics.accuracy_score(y, y_pred),
+                sensitivity=Report._calculate_sensitivity(confusion_matrix),
                 specificity=Report._calculate_specificity(confusion_matrix)
             ),
             tables=Report.Tables(
@@ -101,10 +101,10 @@ class Report:
             raise ValueError("List of reports is empty")
 
         avg_scores = Report.Scores(
-            accuracy=np.mean([r.scores.accuracy for r in reports]),
-            cohen_kappa=np.mean([r.scores.cohen_kappa for r in reports]),
-            mcc=np.mean([r.scores.mcc for r in reports]),
-            specificity=np.mean([r.scores.specificity for r in reports])
+            mcc=float(np.mean([r.scores.mcc for r in reports])),
+            accuracy=float(np.mean([r.scores.accuracy for r in reports])),
+            sensitivity=float(np.mean([r.scores.sensitivity for r in reports])),
+            specificity=float(np.mean([r.scores.specificity for r in reports]))
         )
 
         avg_confusion_matrix = np.mean([r.tables.confusion_matrix for r in reports], axis=0)
@@ -209,6 +209,11 @@ class Report:
     def _calculate_specificity(matrix: np.ndarray) -> float:
         tn, fp, _, _ = matrix.ravel()
         return tn / (tn + fp)
+
+    @staticmethod
+    def _calculate_sensitivity(matrix: np.ndarray) -> float:
+        _, _, fn, tp = matrix.ravel()
+        return tp / (tp + fn)
 
     @staticmethod
     def _calculate_roc_curve(y: np.ndarray, y_pred_proba: np.ndarray) -> Dict[str, np.ndarray]:
