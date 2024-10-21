@@ -93,5 +93,5 @@ class Encoder(BaseEncoder):
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, lambda seq: encode(seq, self.k, self.upto, self.normalize), 'kmer')
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return self.fit_transform(x)

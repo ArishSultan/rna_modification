@@ -29,5 +29,5 @@ class Encoder(BaseEncoder):
         ps_dict = create_ps_dict(self.k)
         return encode_df(x, lambda seq: encode(seq, self.k, ps_dict), f'ps_{self.k}')
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return self.fit_transform(x)

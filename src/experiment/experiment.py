@@ -60,9 +60,12 @@ class Experiment:
         }
 
 
+from sklearn.feature_selection import SelectKBest
+
+
 class ExperimentFixed:
     def __init__(self, factory: ModelFactory, test: SeqBunch | None, train: SeqBunch, encoding, k=5,
-                 should_fit_encoder=True, use_targets_test=False):
+                 should_fit_encoder=True, use_targets_test=False, feature_selector=None):
         self.k = k
         self.test = test
         self.train = train
@@ -70,6 +73,7 @@ class ExperimentFixed:
         self.encoding = encoding
         self.use_targets_test = use_targets_test
         self.should_fit_encoder = should_fit_encoder
+        self.feature_selector = feature_selector  # New optional feature selection parameter
 
     def run(self):
         k_fold = StratifiedKFold(n_splits=self.k, random_state=42, shuffle=True)
@@ -95,6 +99,12 @@ class ExperimentFixed:
                 else:
                     test_x = self.encoding.transform(test_x)
 
+            if self.feature_selector is not None:
+                print(train_x)
+                self.feature_selector.fit(train_x, train_y)
+                train_x = self.feature_selector.transform(train_x)
+                test_x = self.feature_selector.transform(test_x)
+
             # Train the model
             model = self.factory.create_model()
             model.fit(train_x, train_y)
@@ -111,6 +121,7 @@ class ExperimentFixed:
         test_x = self.test.samples
         test_y = self.test.targets
 
+        # Apply encoding to the full training data
         if self.encoding is not None:
             if self.should_fit_encoder:
                 x = self.encoding.fit_transform(x, y=y)
@@ -121,6 +132,11 @@ class ExperimentFixed:
                 test_x = self.encoding.transform(test_x, y=test_y)
             else:
                 test_x = self.encoding.transform(test_x)
+
+        if self.feature_selector is not None:
+            self.feature_selector.fit(x, y)
+            x = self.feature_selector.transform(x)
+            test_x = self.feature_selector.transform(test_x)
 
         # Train the model on the full training data
         model = self.factory.create_model()

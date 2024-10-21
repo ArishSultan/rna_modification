@@ -26,5 +26,5 @@ class Encoder(BaseEncoder):
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, encode, 'binary')
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return self.fit_transform(x)

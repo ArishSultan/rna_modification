@@ -369,6 +369,7 @@ CCCCCGCCUUUUUUUCUGUUG
         \end{figure}
 
     \subsubsection{Porpoise \cite{li_porpoise_2021}}
+      \paragraph{Homo sapiens}
       \noindent
       \begin{table}[H]
         \centering
@@ -547,12 +548,183 @@ CCCCCGCCUUUUUUUCUGUUG
         \end{figure}
 
     \subsubsection{PseU-ST \cite{zhang_pseu-st_2023}}
-
       \paragraph{Homo sapiens}
+      \noindent
+      \begin{table}[H]
+        \centering
+        \begin{minipage}{0.45\textwidth}
+          \centering
+          \begin{tabular}{lcc}
+            \toprule
+            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+            \midrule
+            Accuracy        & 93\%              & 59\%           \\
+            MCC             & 0.87              & 0.18           \\
+            Sensitivity     & 94\%              & 58\%           \\
+            Specificity     & 93\%              & 61\%           \\
+            \bottomrule
+          \end{tabular}
+          \caption{Results for H\_990 dataset}
+        \end{minipage}%
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+          \centering
+          \begin{tabular}{lcc}
+            \toprule
+            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+            \midrule
+            Accuracy        & 89\%              & 64\%           \\
+            MCC             & 0.79              & 0.28           \\
+            Sensitivity     & 98\%              & 65\%           \\
+            Specificity     & 81\%              & 63\%           \\
+            \bottomrule
+          \end{tabular}
+          \caption{Results for H\_200 dataset}
+        \end{minipage}\label{tab:pseust_pstnpss_hs}
+      \end{table}
+
+      \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.47\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_990}}
+          \captionsetup{justification=centering}
+          \caption{With data leak}
+        \end{subfigure}%
+        \hspace{0.05\textwidth}
+        \begin{subfigure}{0.47\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_990}}
+          \captionsetup{justification=centering}
+          \caption{Without data leak}
+        \end{subfigure}
+        \caption{Porpoise results on \textbf{H\_990} dataset}\label{fig:pseu-st_h990}
+      \end{figure}
+
+      \begin{figure}[H]
+        \centering
+        \begin{subfigure}{0.45\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_200}}
+          \captionsetup{justification=centering}
+          \caption{With data leak}
+        \end{subfigure}%
+        \hspace{0.05\textwidth}
+        \begin{subfigure}{0.45\textwidth}
+          \centering
+          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_200}}
+          \captionsetup{justification=centering}
+          \caption{Without data leak}
+        \end{subfigure}
+        \caption{XGBoost results on \textbf{H\_200} dataset}\label{fig:pseu-st_h200}
+      \end{figure}
 
       \paragraph{Saccharomyces cerevisiae}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 88\%              & 65\%           \\
+                MCC             & 0.75              & 0.31           \\
+                Sensitivity     & 87\%              & 65\%           \\
+                Specificity     & 89\%              & 66\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_628 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 83\%              & 69\%           \\
+                MCC             & 0.67              & 0.39           \\
+                Sensitivity     & 83\%              & 70\%           \\
+                Specificity     & 84\%              & 69\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for S\_200 dataset}
+            \end{minipage}\label{tab:pseu-st_pstnpss_sc}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_s_628}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_s_628}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{S\_628} dataset}\label{fig:pseu-st_s628}
+        \end{figure}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_s_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_s_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{S\_200} dataset}\label{fig:pseu-st_s200}
+        \end{figure}
 
       \paragraph{Mus musculus}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{lcc}
+              \toprule
+              \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+              \midrule
+              Accuracy        & 90\%              & 67\%           \\
+              MCC             & 0.79              & 0.35           \\
+              Sensitivity     & 91\%              & 68\%           \\
+              Specificity     & 89\%              & 67\%           \\
+              \bottomrule
+            \end{tabular}
+            \caption{Results for M\_944 dataset}
+            \label{tab:pseu-st_pstnpss_mm}
+        \end{table}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_m_944}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_m_944}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:pseu-st_m944}
+        \end{figure}
 
     \subsubsection{FKeERF \cite{chen_fuzzy_2024}}
 
@@ -561,139 +733,6 @@ CCCCCGCCUUUUUUUCUGUUG
       \paragraph{Saccharomyces cerevisiae}
 
       \paragraph{Mus musculus}
-
-  \subsection{Paper 1: Porpoise}
-
-    The Porpoise paper presents a significant issue with its use of PSTNPss matrices. Unlike the standard approach of generating matrices solely from the training data, Porpoise generates matrices using both the training and testing sets, which can lead to data leakage and overestimation of model performance. Additionally, they use an external dataset that is not provided in the source code, which adds further complications to the reproducibility of their results.
-
-    Moreover, Porpoise provides pre-calculated PSTNPss matrices, making it difficult to ascertain how these matrices were generated. In the case of the human species dataset, the number of positive and negative sequences used also differs, raising concerns about the balance and fairness of the evaluation.
-
-    Below is the code snippet from the Porpoise implementation, highlighting how they generate the matrices from all samples, not just the training set:
-
-    \begin{lstlisting}[caption={Porpoise: Matrix Generation Code}]
-# Example of how matrices are generated using both training and test sets
-matrix_po = self.CalculateMatrix(positive_samples + test_positive_samples, order)
-matrix_ne = self.CalculateMatrix(negative_samples + test_negative_samples, order)
-    \end{lstlisting}
-
-    This approach is flawed as it incorporates test data into the matrix calculation, leading to potential data leakage and biased results.
-
-  \subsection{Comparison of Original and Re-evaluated Results}
-
-    To evaluate the impact of the proper encoding procedure, we compared the original results presented in the Porpoise paper with the re-evaluated results obtained by using matrices generated solely from the training data. Below are the comparisons for each dataset.
-
-    \subsubsection{H\_990: K-fold Comparison}
-
-      For the \texttt{H\_990} dataset, we compared the original results from Porpoise with the results obtained using proper k-fold cross-validation, where only the training samples were used for matrix generation. The following table summarizes the original and re-evaluated scores for Accuracy (Acc), MCC, Sensitivity, and Specificity:
-
-      \begin{table}[h]
-        \centering
-        \caption{Comparison of Original and Re-evaluated Results for \texttt{H\_990} (K-fold)}
-        \begin{tabular}{lcccc}
-          \hline
-          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
-          \hline
-          Accuracy        & 0.95              & 0.88                  \\
-          MCC             & 0.93              & 0.75                  \\
-          Sensitivity     & 0.92              & 0.79                  \\
-          Specificity     & 0.97              & 0.86                  \\
-          \hline
-        \end{tabular}
-      \end{table}
-
-      Additionally, the ROC curves for both the original and re-evaluated results are presented below:
-
-      \begin{figure}[h]
-        \centering
-%\includegraphics[width=0.45\textwidth]{roc_h990_original.png}
-%\includegraphics[width=0.45\textwidth]{roc_h990_reevaluated.png}
-        \caption{ROC Curves for \texttt{H\_990}: (Left) Original, (Right) Re-evaluated}
-      \end{figure}
-
-    \subsubsection{H\_200: Train-Test Comparison}
-
-      For the \texttt{H\_200} dataset, which uses a standard train-test split, we observed a similar discrepancy between the original and re-evaluated results, as shown in the following table:
-
-      \begin{table}[h]
-        \centering
-        \caption{Comparison of Original and Re-evaluated Results for \texttt{H\_200} (Train-Test)}
-        \begin{tabular}{lcccc}
-          \hline
-          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
-          \hline
-          Accuracy        & 0.96              & 0.85                  \\
-          MCC             & 0.94              & 0.72                  \\
-          Sensitivity     & 0.91              & 0.78                  \\
-          Specificity     & 0.98              & 0.83                  \\
-          \hline
-        \end{tabular}
-      \end{table}
-
-      Similarly, the ROC curves for \texttt{H\_200} are shown below:
-
-      \begin{figure}[h]
-        \centering
-%\includegraphics[width=0.45\textwidth]{roc_h200_original.png}
-%\includegraphics[width=0.45\textwidth]{roc_h200_reevaluated.png}
-        \caption{ROC Curves for \texttt{H\_200}: (Left) Original, (Right) Re-evaluated}
-      \end{figure}
-
-    \subsubsection{S\_644: K-fold Comparison}
-
-      The following table shows the comparison of original and re-evaluated results for the \texttt{S\_644} dataset using k-fold cross-validation:
-
-      \begin{table}[h]
-        \centering
-        \caption{Comparison of Original and Re-evaluated Results for \texttt{S\_644} (K-fold)}
-        \begin{tabular}{lcccc}
-          \hline
-          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
-          \hline
-          Accuracy        & 0.93              & 0.81                  \\
-          MCC             & 0.90              & 0.68                  \\
-          Sensitivity     & 0.88              & 0.75                  \\
-          Specificity     & 0.95              & 0.82                  \\
-          \hline
-        \end{tabular}
-      \end{table}
-
-    \subsubsection{M\_944: K-fold Comparison}
-
-      For the \texttt{M\_944} dataset, we observed the following differences between the original and re-evaluated results:
-
-      \begin{table}[h]
-        \centering
-        \caption{Comparison of Original and Re-evaluated Results for \texttt{M\_944} (K-fold)}
-        \begin{tabular}{lcccc}
-          \hline
-          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
-          \hline
-          Accuracy        & 0.94              & 0.82                  \\
-          MCC             & 0.91              & 0.70                  \\
-          Sensitivity     & 0.89              & 0.76                  \\
-          Specificity     & 0.96              & 0.83                  \\
-          \hline
-        \end{tabular}
-      \end{table}
-
-    \subsubsection{M\_200: Train-Test Comparison}
-
-      Finally, for the \texttt{M\_200} dataset, the following table provides the comparison of results:
-
-      \begin{table}[h]
-        \centering
-        \caption{Comparison of Original and Re-evaluated Results for \texttt{M\_200} (Train-Test)}
-        \begin{tabular}{lcccc}
-          \hline
-          \textbf{Metric} & \textbf{Original} & \textbf{Re-evaluated} \\
-          \hline
-          Accuracy        & 0.95              & 0.84                  \\
-          MCC             & 0.92              & 0.69                  \\
-          Sensitivity     & 0.90              & 0.77                  \\
-          Specificity     & 0.97              & 0.85                  \\
-          \hline
-        \end{tabular}
-      \end{table}
 
 %\section{Conclusion}
 %

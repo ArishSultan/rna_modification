@@ -72,5 +72,5 @@ class Encoder(BaseEncoder):
         info = get_info()
         return encode_df(x, lambda seq: encode(seq, info, self.k, self.lambda0, self.weight), 'pse_knc')
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return self.fit_transform(x)

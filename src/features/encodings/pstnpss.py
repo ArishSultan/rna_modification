@@ -77,13 +77,14 @@ class Encoder(BaseEncoder):
 
     def fit_transform(self, x: DataFrame, **kwargs) -> DataFrame:
         self.fit(x, kwargs['y'])
-        return self.transform(x, kwargs['y'])
+        return self.transform(x, **kwargs)
 
-    def transform(self, x: DataFrame, y=None) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         if self._positive_size is None:
             raise 'Call `fit` before calling `transform` because this encoding needs collective sequence information'
 
         sequences = (x['sequence'] if 'sequence' in x else x[0]).values
+        y = kwargs.get('y')
 
         new_samples = []
         for i in range(len(sequences)):

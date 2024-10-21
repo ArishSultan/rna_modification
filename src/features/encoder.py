@@ -11,7 +11,7 @@ class BaseEncoder(ABC, BaseEstimator, TransformerMixin):
         pass
 
     @abstractmethod
-    def transform(self, x: DataFrame):
+    def transform(self, x: DataFrame, **kwargs):
         """
         """
         pass

@@ -86,5 +86,5 @@ class Encoder(BaseEncoder):
         self.fit(x, **kwargs)
         return self.transform(x)
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         return encode_df(x, lambda x: encode(x, self.pos_prob, self.neg_prob), 'proba')
