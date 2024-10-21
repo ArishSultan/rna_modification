@@ -85,9 +85,29 @@
   \input{sections/4_experiments}
 
 
-  \chapter{Conclusion and Future Work}
-    \label{ch:conclusion}
+  \chapter{Conclusion}\label{ch:conclusion}
+    In this study, we addressed the problem of pseudouridine (Ψ) prediction using machine learning (ML) and deep learning (DL) techniques. Through an extensive review of recent literature, covering approximately all the papers, we identified that several approaches adopted by existing studies contained fundamental flaws in their methodologies, particularly in terms of how encodings were applied. To substantiate this, we performed data exploratory analysis (DEA) to check the correlation between features within the datasets, and re-evaluated the techniques from previous studies using more accurate encoding schemes. Our findings highlighted a critical issue: many of the datasets lacked significant correlation, making it challenging to classify Ψ sites with high accuracy.
+
+    One of the key problems identified is that the datasets used in prior research predominantly rely on small sequences (typically 21 nucleotides) that fail to provide sufficient contextual information for accurate predictions. This limits the ability of models to generalize effectively. Furthermore, we noted that only the positive samples (i.e., Ψ-modified sequences) in the datasets are clinically verified, while the negative samples (non-Ψ sequences) are not. This raises concerns about the reliability of these negative samples, as some may, in fact, be positive but untested, thus introducing noise into the classification process.
+
+    Additionally, our analysis pointed out that in real-world scenarios, sequences with unmodified U at the center may exist, even if the probability is low. By increasing the window size (e.g., to 31 or 41 nucleotides), we could capture more contextual information, potentially reducing the likelihood of false negatives. However, current sequence and dataset sizes remain too small for sequential models, such as Transformers or other deep learning-based architectures, to generalize effectively, which prevents their practical application in this domain.
+
+    Another significant observation came from comparing our results with nanopore sequencing, which provides additional layers of information (beyond nucleotide sequences) that are crucial for identifying Ψ sites. The discrepancy between ML/DL predictions and nanopore results underscores the limitations of current datasets and encoding approaches.
+
+
+    \section{Future work}\label{sec:future-work}
+
+      For future work, several improvements can be pursued. First, creating larger datasets with longer sequences and ensuring that both positive and negative samples are clinically tested or species-specific will be critical to improving prediction accuracy. Additionally, incorporating sequences from other RNA modification datasets, where U is known to remain unmodified, could enhance the quality of the negative samples. Another promising direction involves augmenting the datasets with advanced techniques, such as Gaussian Mixture Models (GMMs) or Variational Autoencoders (VAEs), to generate synthetic samples and expand the training data.
+
+      Furthermore, applying sequential models to larger, more comprehensive datasets could enable a more robust analysis of Ψ site prediction. Another alternative would be exploring Kernel-based Attention Networks (KANs), which have shown promising results on highly non-linear data. Given the non-linear nature of pseudouridine modification as observed in our DEA, KANs might offer a viable path forward.
+
+      In conclusion, while pseudouridine prediction remains a challenging problem due to inherent limitations in dataset quality and size, addressing these issues through better dataset construction, augmentation, and advanced modeling techniques holds the potential to significantly improve prediction performance.
+
+
+    \section{Resources \& Materials}\label{sec:resources-&-materials}
+      All the resources are generated through source code and that source code can be accessed from \url{https://github.com/ArishSultan/https://github.com/ArishSultan/rna_modification.git}
+
 
 % Bibliography
-    \bibliography{references}
+      \bibliography{references}
 \end{document}

@@ -59,7 +59,7 @@ class Encoder(BaseEstimator, TransformerMixin):
 
         self.top_motifs = sorted(mi_scores, key=mi_scores.get, reverse=True)[:self.top_n]
 
-    def transform(self, x: DataFrame) -> DataFrame:
+    def transform(self, x: DataFrame, **kwargs) -> DataFrame:
         if self.top_motifs is None:
             raise ValueError(
                 'Call `fit` before calling `transform` because this encoding needs collective sequence information')

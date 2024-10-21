@@ -368,77 +368,111 @@ CCCCCGCCUUUUUUUCUGUUG
             \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:xgb_m944}
         \end{figure}
 
-    \subsubsection{Porpoise \cite{li_porpoise_2021}}
+    \subsubsection{Porpoise}
+      This study~\cite{li_porpoise_2021} uses stacked ensemble along with combination of different encoding schemes and feeds different feature sub sects to each predictor in the stacked model.
+      However, the way they utilize PSTNPss is not described clearly, based on the provided code it is clear that they used external data for calculation the positive and negative matrices and then evaluated the performance on the same dataset, ideally the creation of dataset should be done by using the benchmark training set only because that way the results would be unbiased and will be comparable to other past researches.
+      If we are to incorporate additional data then other models performance should also be checked with additional data to make the comparison fair.
+
+      This following code snippet is from the official repository provided by the Authors,
+      \begin{lstlisting}[caption={Porpoise PSTNPss implementation \(lines 39\textminus{61}\)},label={lst:porpoise-pstnpss}]
+if typ == 'H':
+    matrix_po = np.fromfile(father_path+'/'+'H_po.bin', dtype=float)
+    matrix_po = matrix_po.reshape(19, 64)
+    matrix_ne = np.fromfile(father_path + '/' + 'H_ne.bin', dtype=float)
+    matrix_ne = matrix_ne.reshape(19, 64)
+    positive_number = 4327
+    negative_number = 3732
+
+elif typ == 'S':
+    matrix_po = np.fromfile(father_path + '/' + 'S_po.bin', dtype=float)
+    matrix_po = matrix_po.reshape(29, 64)
+    matrix_ne = np.fromfile(father_path + '/' + 'S_ne.bin', dtype=float)
+    matrix_ne = matrix_ne.reshape(29, 64)
+    positive_number = 1147
+    negative_number = 1147
+
+elif typ == 'M':
+    matrix_po = np.fromfile(father_path + '/' + 'M_po.bin', dtype=float)
+    matrix_po = matrix_po.reshape(19, 64)
+    matrix_ne = np.fromfile(father_path + '/' + 'M_ne.bin', dtype=float)
+    matrix_ne = matrix_ne.reshape(19, 64)
+    positive_number = 3174
+    negative_number = 3174
+      \end{lstlisting}
+
+      We can clearly see that we have six pre-calculated matrices (from .bin files), two for each species, and we do not know the source samples that were used in this calculation, after that we can see the number of positive and negative samples that are much higher compared to our dataset and in case of Homo Sapines, the number do not match it seems like the number of positive samples use is much higher then negative and hence it will be a bit biased.
+      Since all the other models from past works are solely trained using the available data hence, we re-evaluated the performance using the standard implementation and here are the results.
+
       \paragraph{Homo sapiens}
-      \noindent
-      \begin{table}[H]
-        \centering
-        \begin{minipage}{0.45\textwidth}
-          \centering
-          \begin{tabular}{lcc}
-            \toprule
-            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
-            \midrule
-            Accuracy        & 73\%              & 57\%           \\
-            MCC             & 0.58              & 0.14           \\
-            Sensitivity     & 89\%              & 62\%           \\
-            Specificity     & 68\%              & 52\%           \\
-            \bottomrule
-          \end{tabular}
-          \caption{Results for H\_990 dataset}
-        \end{minipage}%
-        \hfill
-        \begin{minipage}{0.45\textwidth}
-          \centering
-          \begin{tabular}{lcc}
-            \toprule
-            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
-            \midrule
-            Accuracy        & 77\%              & 63\%           \\
-            MCC             & 0.55              & 0.27           \\
-            Sensitivity     & 82\%              & 73\%           \\
-            Specificity     & 72\%              & 53\%           \\
-            \bottomrule
-          \end{tabular}
-          \caption{Results for H\_200 dataset}
-        \end{minipage}\label{tab:porpoise_pstnpss_hs}
-      \end{table}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 73\%              & 57\%           \\
+                MCC             & 0.58              & 0.14           \\
+                Sensitivity     & 89\%              & 62\%           \\
+                Specificity     & 68\%              & 52\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_990 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 77\%              & 63\%           \\
+                MCC             & 0.55              & 0.27           \\
+                Sensitivity     & 82\%              & 73\%           \\
+                Specificity     & 72\%              & 53\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_200 dataset}
+            \end{minipage}\label{tab:porpoise_pstnpss_hs}
+        \end{table}
 
-      \begin{figure}[H]
-        \centering
-        \begin{subfigure}{0.47\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_990}}
-          \captionsetup{justification=centering}
-          \caption{With data leak}
-        \end{subfigure}%
-        \hspace{0.05\textwidth}
-        \begin{subfigure}{0.47\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_990}}
-          \captionsetup{justification=centering}
-          \caption{Without data leak}
-        \end{subfigure}
-        \caption{Porpoise results on \textbf{H\_990} dataset}\label{fig:porpoise_h990}
-      \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_990}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_990}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{H\_990} dataset}\label{fig:porpoise_h990}
+        \end{figure}
 
-      \begin{figure}[H]
-        \centering
-        \begin{subfigure}{0.45\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_200}}
-          \captionsetup{justification=centering}
-          \caption{With data leak}
-        \end{subfigure}%
-        \hspace{0.05\textwidth}
-        \begin{subfigure}{0.45\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_200}}
-          \captionsetup{justification=centering}
-          \caption{Without data leak}
-        \end{subfigure}
-        \caption{XGBoost results on \textbf{H\_200} dataset}\label{fig:porpoise_h200}
-      \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_dl_h_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_h_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{Porpoise results on \textbf{H\_200} dataset}\label{fig:porpoise_h200}
+        \end{figure}
 
       \paragraph{Saccharomyces cerevisiae}
         \noindent
@@ -544,80 +578,84 @@ CCCCCGCCUUUUUUUCUGUUG
               \captionsetup{justification=centering}
               \caption{Without data leak}
             \end{subfigure}
-            \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:porpoise_m944}
+            \caption{Porpoise results on \textbf{H\_944} dataset}\label{fig:porpoise_m944}
         \end{figure}
 
-    \subsubsection{PseU-ST \cite{zhang_pseu-st_2023}}
+    \subsubsection{PseU-ST}
+      This study~\cite{zhang_pseu-st_2023} takes a similar approach as Porpoise~\cite{li_porpoise_2021} however it takes different encoding schemes and different models, but the mistake is somewhat similar, firstly it is dependent on PSTNPss and we can see the different in performance, another mistake is the use of Best feature selection.
+      Firstly the encoding is applied on the whole training set and feature selection is also done on the whole dataset instead of performing best feature selection on each k-fold.
+      As mentioned in the earlier section, applying position specific propensity on the whole train dataset before k-fold adds label information which leads to unreliable results and performing feature selection on the whole dataset instead of each k-fold will also add some bias in the predictions
+
       \paragraph{Homo sapiens}
-      \noindent
-      \begin{table}[H]
-        \centering
-        \begin{minipage}{0.45\textwidth}
-          \centering
-          \begin{tabular}{lcc}
-            \toprule
-            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
-            \midrule
-            Accuracy        & 93\%              & 59\%           \\
-            MCC             & 0.87              & 0.18           \\
-            Sensitivity     & 94\%              & 58\%           \\
-            Specificity     & 93\%              & 61\%           \\
-            \bottomrule
-          \end{tabular}
-          \caption{Results for H\_990 dataset}
-        \end{minipage}%
-        \hfill
-        \begin{minipage}{0.45\textwidth}
-          \centering
-          \begin{tabular}{lcc}
-            \toprule
-            \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
-            \midrule
-            Accuracy        & 89\%              & 64\%           \\
-            MCC             & 0.79              & 0.28           \\
-            Sensitivity     & 98\%              & 65\%           \\
-            Specificity     & 81\%              & 63\%           \\
-            \bottomrule
-          \end{tabular}
-          \caption{Results for H\_200 dataset}
-        \end{minipage}\label{tab:pseust_pstnpss_hs}
-      \end{table}
+        \noindent
+        \begin{table}[H]
+            \centering
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 93\%              & 59\%           \\
+                MCC             & 0.87              & 0.18           \\
+                Sensitivity     & 94\%              & 58\%           \\
+                Specificity     & 93\%              & 61\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_990 dataset}
+            \end{minipage}%
+            \hfill
+            \begin{minipage}{0.45\textwidth}
+              \centering
+              \begin{tabular}{lcc}
+                \toprule
+                \textbf{Metric} & \textbf{Original} & \textbf{Fixed} \\
+                \midrule
+                Accuracy        & 89\%              & 64\%           \\
+                MCC             & 0.79              & 0.28           \\
+                Sensitivity     & 98\%              & 65\%           \\
+                Specificity     & 81\%              & 63\%           \\
+                \bottomrule
+              \end{tabular}
+              \caption{Results for H\_200 dataset}
+            \end{minipage}\label{tab:pseust_pstnpss_hs}
+        \end{table}
 
-      \begin{figure}[H]
-        \centering
-        \begin{subfigure}{0.47\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_990}}
-          \captionsetup{justification=centering}
-          \caption{With data leak}
-        \end{subfigure}%
-        \hspace{0.05\textwidth}
-        \begin{subfigure}{0.47\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_990}}
-          \captionsetup{justification=centering}
-          \caption{Without data leak}
-        \end{subfigure}
-        \caption{Porpoise results on \textbf{H\_990} dataset}\label{fig:pseu-st_h990}
-      \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_990}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.47\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_990}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{PseU-ST results on \textbf{H\_990} dataset}\label{fig:pseu-st_h990}
+        \end{figure}
 
-      \begin{figure}[H]
-        \centering
-        \begin{subfigure}{0.45\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_200}}
-          \captionsetup{justification=centering}
-          \caption{With data leak}
-        \end{subfigure}%
-        \hspace{0.05\textwidth}
-        \begin{subfigure}{0.45\textwidth}
-          \centering
-          \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_200}}
-          \captionsetup{justification=centering}
-          \caption{Without data leak}
-        \end{subfigure}
-        \caption{XGBoost results on \textbf{H\_200} dataset}\label{fig:pseu-st_h200}
-      \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_dl_h_200}}
+              \captionsetup{justification=centering}
+              \caption{With data leak}
+            \end{subfigure}%
+            \hspace{0.05\textwidth}
+            \begin{subfigure}{0.45\textwidth}
+              \centering
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_200}}
+              \captionsetup{justification=centering}
+              \caption{Without data leak}
+            \end{subfigure}
+            \caption{PseU-ST results on \textbf{H\_200} dataset}\label{fig:pseu-st_h200}
+        \end{figure}
 
       \paragraph{Saccharomyces cerevisiae}
         \noindent
@@ -669,7 +707,7 @@ CCCCCGCCUUUUUUUCUGUUG
               \captionsetup{justification=centering}
               \caption{Without data leak}
             \end{subfigure}
-            \caption{Porpoise results on \textbf{S\_628} dataset}\label{fig:pseu-st_s628}
+            \caption{PseU-ST results on \textbf{S\_628} dataset}\label{fig:pseu-st_s628}
         \end{figure}
 
         \begin{figure}[H]
@@ -683,11 +721,11 @@ CCCCCGCCUUUUUUUCUGUUG
             \hspace{0.05\textwidth}
             \begin{subfigure}{0.45\textwidth}
               \centering
-              \resizebox{\textwidth}{!}{\input{images/tikz/porpoise_simple_s_200}}
+              \resizebox{\textwidth}{!}{\input{images/tikz/pseu-st_simple_h_200}}
               \captionsetup{justification=centering}
               \caption{Without data leak}
             \end{subfigure}
-            \caption{Porpoise results on \textbf{S\_200} dataset}\label{fig:pseu-st_s200}
+            \caption{PseU-ST results on \textbf{S\_200} dataset}\label{fig:pseu-st_s200}
         \end{figure}
 
       \paragraph{Mus musculus}
@@ -723,16 +761,8 @@ CCCCCGCCUUUUUUUCUGUUG
               \captionsetup{justification=centering}
               \caption{Without data leak}
             \end{subfigure}
-            \caption{XGBoost results on \textbf{H\_944} dataset}\label{fig:pseu-st_m944}
+            \caption{PseU-ST results on \textbf{H\_944} dataset}\label{fig:pseu-st_m944}
         \end{figure}
-
-    \subsubsection{FKeERF \cite{chen_fuzzy_2024}}
-
-      \paragraph{Homo sapiens}
-
-      \paragraph{Saccharomyces cerevisiae}
-
-      \paragraph{Mus musculus}
 
 %\section{Conclusion}
 %

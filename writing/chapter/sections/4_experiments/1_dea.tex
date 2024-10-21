@@ -1,146 +1,178 @@
-\section{Data Exploratory Analysis}\label{sec:data-exploratroy-analysis}
-  In this section, we systematically explore the three datasets by applying various analytical techniques to uncover meaningful insights.
-  We begin by analyzing nucleotide composition and pairwise nucleotide interactions.
-  We then explore different encoding schemes, apply dimensionality reduction, and conclude with sequence similarity and clustering analysis.
+\section{Data Exploratory Analysis}\label{sec:data-exploratory-analysis}
+  In this section, we perform a comprehensive exploration of the three datasets to uncover meaningful patterns and insights that could guide subsequent model development.
+  The analysis begins by investigating the nucleotide composition across different k-mer sizes, followed by an examination of various RNA encoding schemes.
+  These analyses are critical for understanding the structural properties of the data and their potential impact on predictive models.
+  Visualizations using dimension reduction techniques, such as tSNE and UMAP, will further elucidate the underlying structure of the datasets.
 
-  \subsection{Nucleotide Composition}\label{subsec:nucleotide-composition}
-    This analysis provides a quantitative measure of the relative frequencies of the four RNA nucleotides.
-    This technique helps reveal potential biases in the nucleotide distribution, which may be indicative of underlying biological mechanisms.
-    By identifying such patterns, we can uncover regions with functional importance, such as regulatory sequences or conserved motifs within the RNA. The primary goal of this analysis is to detect over- or underrepresentation of specific nucleotides, which could suggest the presence of biologically relevant elements.
+  \subsection{Nucleotide Composition with k-mers}\label{subsec:nucleotide-composition-kmers}
+    Nucleotide composition analysis provides an essential first step in characterizing RNA sequences.
+    By extending the analysis to k-mers (sequences of $k$ consecutive nucleotides), we aim to capture more complex patterns within the sequence that single-nucleotide frequencies might miss.
+    This is crucial because k-mer frequencies can reveal motifs and sequence patterns, including regulatory elements, that might play a functional or evolutionary role in RNA biology.
 
-    Formally, let \( S = \{n_1, n_2, \dots, n_L\} \) be an RNA sequence of length \( L \), where each nucleotide \( n_i \in \{A, C, G, U\} \).
-    The frequency \( f(n) \) of nucleotide \( n \) in the sequence is defined as:
-
+    Formally, for a sequence $S = \{n_1, n_2, \dots, n_L\}$, a k-mer is defined as a subsequence of length $k$, denoted as $\{n_i, n_{i+1}, \dots, n_{i+k-1}\}$, where $1 \leq i \leq L - k + 1$.
+    The frequency of a given k-mer in a sequence is calculated as:
     \[
-      f(n) = \frac{\sum_{i=1}^{L} g(n_i = n)}{L}
+      f(\text{k-mer}) = \frac{\text{Count of k-mer in } S}{L - k + 1}
     \]
+    By calculating k-mer frequencies for different values of $k$ (e.g., $k = 1, 2, 3$), we can detect patterns such as sequence motifs or specific nucleotide interactions across the dataset.
 
-    where \( g(n_i = n) \) is the indicator function that returns 1 if the nucleotide \( n_i \) is equal to \( n \), and 0 otherwise.
-    This frequency represents the proportion of each nucleotide in the sequence.
+    The following visualizations show the k-mer compositions for three species: human, yeast, and mouse.
 
-    For a dataset containing \( N \) RNA sequences, the nucleotide composition across the dataset is computed by averaging the nucleotide counts across all sequences.
-    The overall frequency \( f(n) \) of nucleotide \( n \) is given by:
+    \begin{figure}[H]
+      \centering
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_h_990(k=1)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 1$}
+      \end{subfigure}%
+      \hspace{0.05\textwidth}
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_h_990(k=2)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 2$}
+      \end{subfigure}%
+      \caption{Nuclelotide composition for H\_990 dataset}\label{fig:nc_h_990}
+    \end{figure}
 
-    \[
-      f(n) = \frac{\sum_{i=1}^{N} \sum_{j=1}^{L_i} g(S_{ij} = n)}{\sum_{i=1}^{N} L_i}
-    \]
+    \begin{figure}[H]
+      \centering
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_m_944(k=1)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 1$}
+      \end{subfigure}%
+      \hspace{0.05\textwidth}
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_m_944(k=2)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 2$}
+      \end{subfigure}%
+      \caption{Nuclelotide composition for M\_944 dataset}\label{fig:nc_m_944}
+    \end{figure}
 
-    where \( L_i \) is the length of the \( i \)-th sequence \( S_i \), and \( S_{ij} \) is the \( j \)-th nucleotide in sequence \( S_i \).
-    This formula is used to compute the average frequency of each nucleotide \( n \in \{A, C, G, U\} \) in the dataset.
+    \begin{figure}[H]
+      \centering
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_s_628(k=1)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 1$}
+      \end{subfigure}%
+      \hspace{0.05\textwidth}
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_s_628(k=2)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 2$}
+      \end{subfigure}%
+      \caption{Nuclelotide composition for S\_628 dataset}\label{fig:nc_s_628}
+    \end{figure}
 
-%\begin{figure}[ht]
-%  \centering
-%  \includegraphics[width=0.8\textwidth]{nucleotide_composition.png} % Replace with actual image filename
-%  \caption{Nucleotide composition for the human, yeast, and mouse RNA datasets.}
-%  \label{fig:nucleotide_composition}
-%\end{figure}
+    \begin{figure}[H]
+      \centering
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_h_200(k=1)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 1$}
+      \end{subfigure}%
+      \hspace{0.05\textwidth}
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_h_200(k=2)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 2$}
+      \end{subfigure}%
+      \caption{Nuclelotide composition for H\_200 dataset}\label{fig:nc_h_200}
+    \end{figure}
 
-    The results of the nucleotide composition analysis for the human, yeast, and mouse RNA datasets are shown in Figure~\ref{fig:nucleotide_composition}. In the human dataset, for instance, we observe a higher frequency of Uracil (U), which suggests a potential structural role in RNA folding or stability. In contrast, the yeast dataset shows a marked preference for Adenine (A), indicating possible involvement in regulatory regions, such as promoter sequences. The mouse dataset, with a more balanced nucleotide distribution, suggests a less specialized role for individual nucleotides.
+    \begin{figure}[H]
+      \centering
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_s_200(k=1)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 1$}
+      \end{subfigure}%
+      \hspace{0.05\textwidth}
+      \begin{subfigure}{0.47\textwidth}
+        \centering
+        \resizebox{\textwidth}{!}{\input{images/tikz/nc_s_200(k=2)}}
+        \captionsetup{justification=centering}
+        \caption{$k = 2$}
+      \end{subfigure}%
+      \caption{Nuclelotide composition for S\_200 dataset}\label{fig:nc_s_200}
+    \end{figure}
 
-    Overall, the analysis highlights important variations in nucleotide composition across species, potentially reflecting evolutionary pressures or functional constraints. These insights can inform further exploration into specific sequence motifs or regions of interest that may play critical roles in RNA function and regulation.
-
-  \subsection{Pairwise Nucleotide Interactions}\label{subsec:pairwise-nucleotide-interactions}
-    To explore dependencies between nucleotides, we calculate the frequency of dinucleotides, or pairs of nucleotides that appear consecutively. For a given sequence \( S \), the frequency of each dinucleotide pair \( (n_i, n_{i+1}) \) is calculated as:
-
-    \[
-      f(n_i, n_{i+1}) = \frac{\text{Count of } (n_i, n_{i+1}) \text{ in } S}{L-1}
-    \]
-
-    For a dataset of \( N \) sequences, the average frequency of each dinucleotide is given by:
-    \[
-      f(n_i, n_{i+1}) = \frac{\sum_{i=1}^{N} \text{Count of } (n_i, n_{i+1}) \text{ in sequence } S_i}{N}
-    \]
-
-    The results are visualized in Figure~\ref{fig:pairwise_interactions}. This analysis helps identify potential motifs or recurring patterns in the sequences, which might play a role in pseudouridine formation.
-
-%    \begin{figure}[ht]
-%      \centering
-%      \includegraphics[width=0.8\textwidth]{pairwise_interactions.png} % Replace with actual image filename
-%      \caption{Pairwise nucleotide interaction frequencies for the human dataset.}
-%      \label{fig:pairwise_interactions}
-%    \end{figure}
+    These visualizations~\ref{fig:nc_h_990, fig:nc_m_944, fig:nc_s_628}, provide us basic nucleotide/kmer distributions in all the datasets, and we can see the distributions in the independent sets in~\ref{fig:nc_h_200, fig:nc_s_200}.
+    Although it is also evident that there is no significant different in the existence of motif in positive and negative sequences.
 
   \subsection{Encoding Scheme Exploration}\label{subsec:encoding-scheme-exploration}
-    RNA encoding schemes transform nucleotide sequences into numerical feature representations, which are required for machine learning models. For example, in one-hot encoding, each nucleotide \( n \) is represented by a vector \( v(n) \), where:
+    RNA encoding schemes are a pivotal part of transforming sequence data into numerical representations suitable for machine learning models.
+    The choice of encoding can significantly affect model performance by capturing various aspects of the sequence, ranging from simple compositional information to complex patterns.
+    In this section, we explore both unsupervised and supervised encoding schemes to examine how they represent the data and the insights they offer about the sequence structure.
 
-    \[
-      v(A) = [1, 0, 0, 0], \quad v(C) = [0, 1, 0, 0], \quad v(G) = [0, 0, 1, 0], \quad v(U) = [0, 0, 0, 1]
-    \]
+    \begin{table}[htbp]
+      \centering
+      \begin{tabularx}{\textwidth}{|p{1cm}|X|X|X|}
+        \hline
+        &
+        tSNE &
+        UMAP &
+        UMAP (fitted) \\
+        \hline
+        \rotatebox{90}{\parbox{4cm}{\centering Binary}} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/human/plot_1_1} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/human/plot_1_2} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/human/plot_1_3} \\
+        \hline
+      \end{tabularx}
+      \caption{Comparison of all the encodings on human species}\label{tab:dea-unsupervised-encodings-H}
+    \end{table}
 
-    Other encoding schemes, such as k-mer frequency or nucleotide density, represent sequences differently. Once the encoding is applied, we perform a correlation analysis between the features. The correlation between two features \( x \) and \( y \) is given by:
+    \begin{table}[htbp]
+      \centering
+      \begin{tabularx}{\textwidth}{|p{1cm}|X|X|X|}
+        \hline
+        &
+        tSNE &
+        UMAP &
+        UMAP (fitted) \\
+        \hline
+        \rotatebox{90}{\parbox{4cm}{\centering Binary}} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/mouse/plot_1_1} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/mouse/plot_1_2} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/mouse/plot_1_3} \\
+        \hline
+      \end{tabularx}
+      \caption{Comparison of all the encodings on mouse species}\label{tab:dea-unsupervised-encodings-M}
+    \end{table}
 
-    \[
-      \rho(x, y) = \frac{\text{Cov}(x, y)}{\sigma_x \sigma_y}
-    \]
-    where \( \text{Cov}(x, y) \) is the covariance of \( x \) and \( y \), and \( \sigma_x \) and \( \sigma_y \) are the standard deviations of \( x \) and \( y \), respectively. A high correlation may indicate redundancy, and we aim to remove or combine such features.
+    \begin{table}[htbp]
+      \centering
+      \begin{tabularx}{\textwidth}{|p{1cm}|X|X|X|}
+        \hline
+        &
+        tSNE &
+        UMAP &
+        UMAP (fitted) \\
+        \hline
+        \rotatebox{90}{\parbox{4cm}{\centering Binary}} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/yeast/plot_1_1} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/yeast/plot_1_2} &
+        \includegraphics[width=\linewidth]{images/encodings/unsupervised/yeast/plot_1_3} \\
+        \hline
+      \end{tabularx}
+      \caption{Comparison of all the encodings on yeast species}\label{tab:dea-unsupervised-encodings-S}
+    \end{table}
 
-    Feature variability is calculated as the standard deviation of each feature across all samples:
-    \[
-      \sigma(x) = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})^2}
-    \]
-    where \( \bar{x} \) is the mean of feature \( x \). High variability suggests the feature may be informative, while low variability suggests it may be irrelevant.
+    These projections allow us to explore the structure of the data across species and encoding schemes.
+    In particular, the supervised UMAP provides insights into how well the encoded features separate the data according to the target labels, which is crucial for understanding the effectiveness of the encoding in downstream predictive tasks.
 
-%    \begin{figure}[ht]
-%      \centering
-%      \includegraphics[width=0.8\textwidth]{encoding_correlation.png}
-%      \caption{Correlation matrix of encoded features for the human dataset.}
-%      \label{fig:encoding_correlation}
-%    \end{figure}
-%
-%    \begin{figure}[ht]
-%      \centering
-%      \includegraphics[width=0.8\textwidth]{feature_variability.png}
-%      \caption{Feature variability (standard deviation) of encoded features.}
-%      \label{fig:feature_variability}
-%    \end{figure}
+    But based on the information that we see in the visualizations, we can clearly see that there is no significant correlation between data since in all cases the data is highly overlapping regardless of the encoding used, the first two columns show the usage of tSNE and UMAP adn they are just used for dimensionality reduction however in the 3rd column we use UMAP but we fit it on the training set, then we analyse the relationship between trest and training set and we notice that even after training the data there is no correlation between the positive-positive of training and testing set and negative-negative of training and testing set which makes the classification problem very challenging, in the next section we will analyse some errors in the exiting studies and will re-evaluate the results, since our current observation states that the classification with high accuracy is not possible because of absense of correlation in data.
 
-  \subsection{Dimensionality Reduction and Visualization}\label{subsec:dimensionality-reduction-and-visualization}
-    To reduce the dimensionality of the feature space, we apply Principal Component Analysis (PCA). PCA identifies the directions (principal components) along which the variance in the data is maximal. Mathematically, we solve the eigenvalue problem for the covariance matrix \( \Sigma \) of the data:
-
-    \[
-      \Sigma v = \lambda v
-    \]
-    where \( v \) is an eigenvector (principal component) and \( \lambda \) is its corresponding eigenvalue (variance explained by the principal component). The data is then projected onto the first \( k \) principal components to obtain a lower-dimensional representation:
-
-    \[
-      z = X W
-    \]
-    where \( X \) is the original feature matrix and \( W \) is the matrix of the top \( k \) eigenvectors.
-
-    In Figure~\ref{fig:pca_visualization}, we show the PCA projection of the data into two dimensions.
-
-%    \begin{figure}[ht]
-%      \centering
-%      \includegraphics[width=0.8\textwidth]{pca_visualization.png}
-%      \caption{PCA projection of the human dataset.}
-%      \label{fig:pca_visualization}
-%    \end{figure}
-
-    The intuition behind PCA is to capture the most significant sources of variance in the data with fewer dimensions, making the data easier to visualize and analyze.
-
-  \subsection{Sequence Similarity and Clustering}\label{subsec:sequence-similarity-and-clustering}
-    Finally, we compute sequence similarity using distance metrics such as Hamming distance, which measures the number of differing nucleotides between two sequences \( S_1 \) and \( S_2 \):
-
-    \[
-      d_H(S_1, S_2) = \sum_{i=1}^{L} \mathbb{1}(S_1[i] \neq S_2[i])
-    \]
-    where \( \mathbb{1} \) is the indicator function and \( L \) is the sequence length. Sequences with small Hamming distances are more similar.
-
-    Using these distances, we perform clustering with \( k \)-means. The objective of \( k \)-means is to minimize the within-cluster sum of squares:
-
-    \[
-      \text{minimize} \sum_{i=1}^{k} \sum_{x \in C_i} \|x - \mu_i\|^2
-    \]
-    where \( C_i \) is the set of points in cluster \( i \) and \( \mu_i \) is the centroid of cluster \( i \).
-
-    The clustering results are shown in Figure~\ref{fig:clustering}, where sequences are colored by their assigned cluster.
-
-%    \begin{figure}[ht]
-%      \centering
-%      \includegraphics[width=0.8\textwidth]{clustering.png}
-%      \caption{Clustering of human RNA sequences using K-means in PCA-reduced space.}
-%      \label{fig:clustering}
-%    \end{figure}
-
-  \subsection{Summary of Findings}\label{subsec:summary-of-findings}
-    The data exploration reveals distinct patterns across human, yeast, and mouse RNA sequences. Nucleotide composition and pairwise interactions show species-specific differences. Encoding schemes produce varying levels of feature correlation, and PCA effectively reduces dimensionality for visualization. Finally, sequence clustering identifies potential functional groups based on nucleotide similarity.
+%    in the next section we try to apply different distance algorithms on the samples to check their relationships and see if the classification boundary exists or not.
